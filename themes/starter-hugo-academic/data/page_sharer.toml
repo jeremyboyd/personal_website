@@ -10,6 +10,22 @@
   enable = true
 
 [[buttons]]
+  id = "linkedin"
+  url = "https://www.linkedin.com/shareArticle?url={url}&title={title}"
+  title = "LinkedIn"
+  icon_pack = "fab"
+  icon = "linkedin-in"
+  enable = true
+
+[[buttons]]
+  id = "pinterest"
+  url = "https://pinterest.com/pin/create/link/?url={url}&description={title}"
+  title = "Pinterest"
+  icon_pack = "fab"
+  icon = "pinterest"
+  enable = true
+
+[[buttons]]
   id = "facebook"
   url = "https://www.facebook.com/sharer.php?u={url}&t={title}"
   title = "Facebook"
@@ -23,15 +39,8 @@
   title = "Email"
   icon_pack = "fas"
   icon = "envelope"
-  enable = true
+  enable = false
 
-[[buttons]]
-  id = "linkedin"
-  url = "https://www.linkedin.com/shareArticle?url={url}&title={title}"
-  title = "LinkedIn"
-  icon_pack = "fab"
-  icon = "linkedin-in"
-  enable = true
 
 [[buttons]]
   id = "whatsapp"
@@ -39,7 +48,7 @@
   title = "WhatsApp"
   icon_pack = "fab"
   icon = "whatsapp"
-  enable = true
+  enable = false
 
 [[buttons]]
   id = "weibo"
@@ -47,7 +56,7 @@
   title = "Weibo"
   icon_pack = "fab"
   icon = "weibo"
-  enable = true
+  enable = false
 
 [[buttons]]
   id = "reddit"
@@ -55,14 +64,6 @@
   title = "Reddit"
   icon_pack = "fab"
   icon = "reddit-alien"
-  enable = false
-
-[[buttons]]
-  id = "pinterest"
-  url = "https://pinterest.com/pin/create/link/?url={url}&description={title}"
-  title = "Pinterest"
-  icon_pack = "fab"
-  icon = "pinterest"
   enable = false
 
 [[buttons]]

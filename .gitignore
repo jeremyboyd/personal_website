@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+/public/
+/resources/
+/blogdown/
+.DS_Store
+Thumbs.db
+/renv/
+create_new_post.R

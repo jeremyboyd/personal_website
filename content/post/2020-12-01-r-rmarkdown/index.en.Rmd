@@ -1,0 +1,51 @@
+---
+title: "Hello R Markdown"
+categories:
+date: '2021-10-14'
+slug: hello-r-markdown
+tags: ["visualization", "R", "Rmd", "Hugo", "HTML"]
+subtitle: ''
+summary: ''
+authors: [admin]
+lastmod: '2021-10-14T16:07:45-06:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+# tags: ["astrophysics", "CERN", "R Markdown", "regression"]
+# Can't seem to get tags to work!
+# For authors, need to use [admin] rather than ["Jeremy Boyd"] in order for author name to be formatted correctly--i.e., with bold font.
+
+```
+
+# R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+fit <- lm(dist ~ speed, data = cars)
+fit
+```
+
+# Including Plots
+
+You can also embed plots. See Figure \@ref(fig:pie) for example:
+
+```{r pie, fig.cap='A fancy pie chart.', tidy=FALSE}
+par(mar = c(0, 1, 0, 1))
+pie(
+  c(280, 60, 20),
+  c('Sky', 'Sunny side of pyramid', 'Shady side of pyramid'),
+  col = c('#0292D8', '#F7EA39', '#C4B632'),
+  init.angle = -50, border = NA
+)
+```

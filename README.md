@@ -1,2 +1,2 @@
 # Personal Website
-Personal website built with blowdown &amp; Hugo.
+Personal website built with blogdown &amp; Hugo.

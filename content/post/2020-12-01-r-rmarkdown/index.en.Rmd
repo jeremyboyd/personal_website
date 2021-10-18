@@ -1,9 +1,9 @@
 ---
 title: "Hello R Markdown"
-categories:
+categories: ["visualization", "R", "Rmd", "Hugo", "HTML"]
 date: '2021-10-14'
 slug: hello-r-markdown
-tags: ["visualization", "R", "Rmd", "Hugo", "HTML"]
+tags:
 subtitle: ''
 summary: ''
 authors: [admin]

@@ -1,7 +1,7 @@
 ---
 authors:
 - admin
-categories: []
+categories: ["Jupyter", "Demo", "Python"]
 date: "2019-02-05T00:00:00Z"
 image:
   caption: ""

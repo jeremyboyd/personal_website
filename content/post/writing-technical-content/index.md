@@ -9,6 +9,7 @@ math: true
 title: Writing technical content in Academic
 authors:
 - admin
+categories: ["Markdown", "Plotly", "Visualization"]
 ---
 
 Academic is designed to give technical content creators a seamless experience. You can focus on the content and Academic handles the rest.

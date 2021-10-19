@@ -10,17 +10,20 @@ authors: [admin]
 lastmod: '2021-10-14T16:07:45-06:00'
 featured: no
 image:
-  caption: ''
+  caption: "Here's a caption!"
   focal_point: ''
   preview_only: no
+  placement: 1
 projects: []
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
-# tags: ["astrophysics", "CERN", "R Markdown", "regression"]
-# Can't seem to get tags to work!
-# For authors, need to use [admin] rather than ["Jeremy Boyd"] in order for author name to be formatted correctly--i.e., with bold font.
+
+# To set up a "featured image" (appears on post list and at top of post), just put an image named "featured.jpg" in the post folder.
+# Placement 1 is centered at top. Placement 2 seems to be full size, centered at top. Placement 3 is banner extending side to side on top.
+# Use image: caption: to put a caption in lower right corner of image. Caption can include a hyperlink to source.
+# Don't know what focal_point does.
 
 ```
 

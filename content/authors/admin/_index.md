@@ -1,5 +1,5 @@
 ---
-bio: I study learning, work perceptions, and pay equity.
+bio: I develop evidence-based interventions aimed at improving human developmental outcomes.
 email: "jeremyboyd@pm.me"
 highlight_name: true
 organizations:

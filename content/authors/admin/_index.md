@@ -35,11 +35,14 @@ social:
 - icon: linkedin
   icon_pack: fab
   link: https://www.linkedin.com/
+-->
 
 education:
   courses:
-  - course: PhD in Artificial Intelligence
-    institution: Stanford University
+  - course: Ph.D., Interdisciplinary Program in Cognitive Science
+    institution: University of California, San Diego
+    
+    <!-- 
     year: 2012
   - course: MEng in Artificial Intelligence
     institution: Massachusetts Institute of Technology

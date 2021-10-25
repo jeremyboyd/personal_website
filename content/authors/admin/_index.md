@@ -41,9 +41,9 @@ education:
   courses:
   - course: Ph.D., Interdisciplinary Program in Cognitive Science
     institution: University of California, San Diego
+    year: 2007
     
-    <!-- 
-    year: 2012
+<!-- 
   - course: MEng in Artificial Intelligence
     institution: Massachusetts Institute of Technology
     year: 2009

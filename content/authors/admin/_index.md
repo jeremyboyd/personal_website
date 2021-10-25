@@ -10,8 +10,7 @@ superuser: true
 title: Jeremy Boyd
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate.
-
+I develop evidence-based interventions aimed at improving human developmental outcomes. One branch of this work has concentrated on language learning in children and adults. Another has focused on practices that organizations can adopt to maximize worker morale and productivity. In both lines of research, I collect data using experimental and observational methods, and analyze it in statistical and machine learning models.
 
 <!-- 
 Uncomment this to show a "download resume" link

@@ -35,15 +35,12 @@ social:
 - icon: linkedin
   icon_pack: fab
   link: https://www.linkedin.com/
--->
 
 education:
   courses:
   - course: Ph.D., Interdisciplinary Program in Cognitive Science
     institution: University of California, San Diego
     year: 2007
-    
-<!-- 
   - course: MEng in Artificial Intelligence
     institution: Massachusetts Institute of Technology
     year: 2009

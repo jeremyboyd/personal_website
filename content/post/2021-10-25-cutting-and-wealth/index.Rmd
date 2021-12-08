@@ -1,0 +1,96 @@
+---
+title: Do wealthier drivers cut more at all-way stop intersections?
+subtitle: An observational study of 759 drivers navigating 46 all-way stop intersections across Southern California
+date: '2021-10-25'
+slug: cutting-and-wealth
+categories: ["social class", "unethical behavior", "driving", "attention", "Bayesian models", "hierarchical models"]
+tags: []
+summary: ''
+authors: [admin]
+lastmod: '2021-10-25T16:21:10-06:00'
+featured: no
+image:
+    placement: 3
+    caption: ''
+    focal_point: 'Center'
+    preview_only: no
+projects: []
+---
+
+```{r setup, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
+
+# Todo: Way to change lastmod: in yaml to automatically update on knit? This gets updated automatically in git.
+# Image should be of status x traffic interaction.
+
+# Resources
+library(tidyverse)
+library(brms)
+library(feather)
+library(here)
+
+# Directory storing analysis files
+analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"
+
+# Read in data and model
+df <- read_feather(paste0(analysis_dir, "cutting_data.feather"))
+fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
+
+```
+
+Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.
+
+```{r warriors, echo = FALSE, out.width = "700", fig.cap = "The eponymous street gang from *The Warriors* (1979)."}
+knitr::include_graphics(here::here("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/warriors.webp"))
+```
+
+Alternatively, consider Gordon Gekko from Oliver Stone's *Wall Street* (1987; see Figure 2). Gekko commits insider trading in order to take over a company, fire its employees, and then raid their pension plan for his own benefit. Gekko's "greed is good" philosophy is consistent with numerous examples of real-world unethical behavior among high SES individuals: bankers dupe their clients into participating in investment schemes they know are doomed to fail,[^1]^,^[^2] CEOs embezzle millions to fund lavish lifestyles[^3], and companies attempt to increase their profitability by illegally harming the health and well-being of thousands.[^4]
+
+```{r gekko, echo = FALSE, out.width = "700", fig.cap = "Gordon Gekko from *Wall Street* (1987)."}
+knitr::include_graphics(here::here("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/gekko.jpg"))
+```
+
+## Are wealthier individuals more prone to unethical behavior?
+
+While empirical evidence bearing on the relationship between SES and unethical behavior is sparse, recent results from Piff and colleagues[^5] demonstrate a positive association between the two. Across seven studies, the authors found that high SES consistently predicted increased unethical behavior. The very uniformity of the effect however, has suggested to some that the results shouldn't be believed. For example, Francis[^6] found that most of the Piff et al. studies had only about a 50% chance of finding a statistically significant effect. Given this power, the likelihood of getting significant results across all seven studies is quite low--around 2%. To account for this discrepancy, Francis argues that Piff et al. "may have (perhaps unwittingly) run, but not reported, additional experiments that failed to reject the null hypothesis (the file drawer problem), or they may have run the experiments in a way that improperly increased the rejection rate of the null hypothesis."
+
+## Replicating and extending Piff et al.'s Study 1
+
+The best way to address Francis’ critique is via independent replication. The present work initiates this effort by attempting to replicate and extend Piff et al.'s Study 1. We focus on this particular study because it offers a compelling real-world demonstration of the relationship between SES and unethical behavior, and also because there are plausible explanations for the behavior of high SES participants that are largely unexplored in Piff et al., but that we attempt to address here.
+
+In Study 1 Piff and colleagues observed 274 drivers as they navigated a single all-way stop intersection in the San Francisco Bay Area. Driver SES was indexed by estimating the value of drivers’ vehicles. Piff et al. found that those driving more expensive vehicles were more likely to illegally cut at the intersection--that is, they were less likely to wait their turn in the queue that formed as cars pulled up to the intersection, as required by California Vehicle Code.[^7] Why are higher SES drivers more likely to cut? While Piff et al. acknowledge that the relationship between SES and unethical behavior is complex, their central argument across all seven studies is that wealthier individuals entertain more positive attitudes towards greed. This contributes to behaviors like lying during business negotiations (Study 5), and cheating at for-profit games (Study 6). But while greed offers a relatively straightforward account of unethical behaviors that result in material gain, it seems ill-suited to explain cutting at all-way stop intersections, where drivers seem to be accruing nothing more than mere seconds. The present work explores an alternative account of the relationship between SES and illegal cutting behavior.
+
+## Could high SES cutting be accidental?
+
+One interpretation of Piff and colleagues’ Study 1 is that increased cutting among higher SES drivers reflects their moral principles, or ethics. For example, wealthier individuals have a greater ability to deal with the legal consequences of breaking the law. This may lead higher SES drivers to reason--either implicitly or explicitly--that there is less of a downside to cutting because they can easily afford to pay any traffic citations they might receive. This sort of reasoning, of course, ignores the fact that cutting is not fair. But considerations of fairness may not be foremost in the minds of higher SES drivers: wealth also tends to be associated with increases in self-interested behavior,[^8] and reduced compassion.[^9]
+
+Alternatively, it may be that cutting has very little to do with ethics. Instead, higher SES drivers may be more prone to accidental cutting due to SES-related differences in attention, as outlined below. Differentiating cutting that is accidental from cutting that stems from moral considerations is important because it bears on a driver’s culpability: many ethical and legal systems assign reduced culpability in the case of accidental law-breaking--e.g., the difference between murder and manslaughter.[^10]
+
+How might higher SES drivers accidentally cut? Navigating an all-way stop intersection requires attention to other drivers in order to determine whose turn it is to proceed. Momentary lapses of attention can cause drivers to lose track of their place in the queue, which leads to accidental cutting if they happen to go through the intersection at the wrong time. Here we suggest that higher SES drivers might be more likely to cut accidentally because they devote less attention to other drivers.
+
+The idea that higher SES individuals might attend less to others has been explored in a number of studies. Whereas lower class individuals show increased attention to the social environment and specifically to other people as a way of dealing with challenges, higher class individuals are less dependent on others for survival, which leaves them relatively free to focus on and pursue their own self-interest.[^11] These class-based differences manifest themselves in numerous subtle ways. For example, higher SES individuals show increased fidgeting and decreased gaze towards their partners during conversation,[^12] as well as decreased ability to read others’ emotions,[^13] both of which are consistent with less attention to others. Indeed, the structure of many social hierarchies encourages decreased attention to others on the part of high SES individuals. In work settings for instance, there is an asymmetry of attention such that it is more likely to be directed up the hierarchy: subordinates pay more attention to their supervisors because success at work is heavily contingent on pleasing their supervisors. In contrast, supervisors pay less attention to subordinates because their success is less strongly dependent on having detailed knowledge of their subordinates’ lives and work.[^14] It is thus possible for higher SES individuals--who tend to be positioned higher in social hierarchies--to learn to attend less to others as a function of their status.
+
+Less attention to others suggests that high SES drivers might be more likely to accidentally cut at all-way stop intersections. But note that it is probably not the case that high SES drivers pay no attention to others. Rather, following resource limitation accounts,[^15]^,^[^16] we hypothesize that the attention that high SES drivers allocate to tracking other drivers will be sufficient to accurately monitor the queue that forms at intersections under light traffic conditions. However, as traffic becomes heavier and more resources are needed to monitor an increasingly complex queue, the likelihood that high SES drivers will lose their place in the queue and accidentally cut goes up. This account thus predicts an interaction between driver SES and traffic, such that the effect of SES on cutting is larger when traffic at an intersection is heavy (see Figure 3, left panel). In contrast, there will be no such interaction if high SES drivers are cutting due to increased ability to pay a traffic citation: one’s ability to pay remains the same regardless of the amount of traffic present at an intersection (see Figure 3, right panel).
+
+To summarize, the present work addresses a serious critique of Piff and colleagues leveled by Francis. It does so by attempting to replicate Piff et al.’s finding of a positive correlation between SES and illegal cutting behavior at all-way stop intersections. In addition, while it is relatively common to assume that unethical behavior among wealthier individuals is related to ethical shortcomings, here we investigate the possibility that high SES cutting might instead be accidental in that it reflects class-based differences in attention.
+
+## Methods
+
+Under construction...
+
+
+[^1]: Corkery, M., & Protess, B. (2014, August 21). Bank of America papers show conflict and trickery in mortgages. *The New York Times*. Retrieved from http://www.nytimes.com.
+[^2]: Johnson, K. (2014, July 14). Citi to pay $7 billion in Justice settlement. *USA Today*. Retrieved from http://www.usatoday.com.
+[^3]: Sorkin, A.R. (2005, September 20). Ex-Tyco executives get 8 to 25 years in prison. *The New York Times*. Retrieved from http://www.nytimes.com.
+[^4]: Waas, M. (2010, April 23). WellPoint routinely targets breast cancer patients. *Reuters*. Retrieved from http://www.reuters.com.
+[^5]: Piff, P.K., Stancato, D.M., Côté, S., Mendoza-Denton, R., & Keltner, D. (2012). Higher social class predicts increased unethical behavior. *Proceedings of the National Academy of Sciences*, 109(11), 4086-4091.
+[^6]: Francis, G. (2012). Evidence that publication bias contaminated studies relating social class and unethical behavior. *Proceedings of the National Academy of Sciences*, 109(25), E1587.
+[^7]: California Department of Motor Vehicles. (2021). *California Vehicle Code*. Retrieved from https://leginfo.legislature.ca.gov.
+[^8]: Piff, P.K. (2014). Wealth and the inflated self: Class, entitlement, and narcissism. *Personality and Social Psychology Bulletin*, 40(1), 34-43.
+[^9]: Stellar, J.E., Manzo, V.M., Kraus, M.W., & Keltner, D. (2012). Class and compassion: Socioeconomic factors predict responses to suffering. *Emotion*, 12(3), 449.
+[^10]: *English Standard Version Bible*. (2001). ESV Online. https://esv.org.
+[^11]: Kraus, M.W., Piff, P.K., Mendoza-Denton, R., Rheinschmidt, M.L., & Keltner, D. (2012). Social class, solipsism, and contextualism: How the rich are different from the poor. *Psychological Review*, 119(3), 546-572.
+[^12]: Kraus, M.W., & Keltner, D. (2009). Signs of socioeconomic status: A thin-slicing approach. *Psychological Science*, 20(1), 99-106.
+[^13]: Kraus, M.W., Côté, S., & Keltner, D. (2010). Social class, contextualism, and empathic accuracy. *Psychological Science*, 21(11), 1716-1723.
+[^14]: Fiske, S.T. (1993). Controlling other people: The impact of power on stereotyping. *American Psychologist*, 48(6), 621-628.
+[^15]: Lavie, N., & Tsal, Y. (1994). Perceptual load as a major determinant of the locus of selection in visual attention. *Perception and Psychophysics*, 56(2), 183-197.
+[^16]: Navon, D., & Gopher, D. (1979). On the economy of the human-processing system. *Psychological Review*, 86(3), 214-255.

@@ -26,10 +26,12 @@ projects: []
 library(tidyverse)
 library(brms)
 library(feather)
-library(here)
 
 # Directory storing analysis files
 analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"
+
+# Post directory
+post_dir <- "/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/"
 
 # Read in data and model
 df <- read_feather(paste0(analysis_dir, "cutting_data.feather"))
@@ -40,13 +42,13 @@ fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
 Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.
 
 ```{r warriors, echo = FALSE, out.width = "700", fig.cap = "The eponymous street gang from *The Warriors* (1979)."}
-knitr::include_graphics(here::here("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/warriors.webp"))
+knitr::include_graphics("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/warriors.webp")
 ```
 
 Alternatively, consider Gordon Gekko from Oliver Stone's *Wall Street* (1987; see Figure 2). Gekko commits insider trading in order to take over a company, fire its employees, and then raid their pension plan for his own benefit. Gekko's "greed is good" philosophy is consistent with numerous examples of real-world unethical behavior among high SES individuals: bankers dupe their clients into participating in investment schemes they know are doomed to fail,[^1]^,^[^2] CEOs embezzle millions to fund lavish lifestyles[^3], and companies attempt to increase their profitability by illegally harming the health and well-being of thousands.[^4]
 
 ```{r gekko, echo = FALSE, out.width = "700", fig.cap = "Gordon Gekko from *Wall Street* (1987)."}
-knitr::include_graphics(here::here("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/gekko.jpg"))
+knitr::include_graphics("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/gekko.jpg")
 ```
 
 ## Are wealthier individuals more prone to unethical behavior?
@@ -61,7 +63,52 @@ In Study 1 Piff and colleagues observed 274 drivers as they navigated a single a
 
 ## Could high SES cutting be accidental?
 
-One interpretation of Piff and colleagues’ Study 1 is that increased cutting among higher SES drivers reflects their moral principles, or ethics. For example, wealthier individuals have a greater ability to deal with the legal consequences of breaking the law. This may lead higher SES drivers to reason--either implicitly or explicitly--that there is less of a downside to cutting because they can easily afford to pay any traffic citations they might receive. This sort of reasoning, of course, ignores the fact that cutting is not fair. But considerations of fairness may not be foremost in the minds of higher SES drivers: wealth also tends to be associated with increases in self-interested behavior,[^8] and reduced compassion.[^9]
+One interpretation of Piff and colleagues’ Study 1 is that increased cutting among high SES drivers reflects their ethical decision-making. Wealth is associated with increases in self-interested behavior[^8] and reduced compassion.[^9] These traits may manifest themselves in the (implicit or explicit) process that higher SES drivers use to determine their behavior at all-way stop intersections. Specifically, higher SES drivers should be more likely to prioritize their own desire to quickly navigate intersections over fairness to other drivers, or even the law. This account predicts increased cutting among higher SES drivers. Further, it predicts the same relationship between driver SES and cutting regardless of the amount of traffic present at the intersection. This is depicted in the left panel of Figure 3. 
+
+```{r preds, echo = FALSE, dev = "svg", fig.cap = "Predictions from two accounts of the relationship between driver SES and illegal cutting behavior at all-way stop intersections."}
+
+# NOTE: If you want the automatic figure numbering to render correctly you can't
+# use underscores in the name of the code block--e.g., the name has to be
+# "preds" and not "pred_figs". Must be doing some parsing of the code block and
+# can't handle underscores.
+
+# Data and figure illustrating positive effects of vehicle status and traffic
+# with and without an interaction.
+pred_data <- tibble(
+    `Vehicle Status` = as_factor(rep(1:5, each = 2, times = 2)),
+    Traffic = rep(c("Heavy", "Light"), times = 10),
+    cond = rep(c("Decision-Making\n", "Attention\n"), each = 10),
+    mean = c(40, 20, 46, 26, 52, 32, 58, 38, 64, 44, 30, 30, 40, 32, 50, 34, 60,
+             36, 70, 38)) %>%
+    
+    # Adjust datapoints down a bit
+    mutate(mean = if_else(cond == "Attention", mean - 7, mean),
+           cond = fct_rev(cond))
+
+# Plot
+pred_data %>%
+    ggplot(mapping = aes(x = `Vehicle Status`,
+                         y = mean,
+                         color = Traffic,
+                         group = Traffic)) +
+    geom_line() +
+    scale_color_brewer(type = "qual", palette = "Set1") +
+    scale_y_continuous(name = "P(Cut)",
+                       limits = c(0, 100),
+                       breaks = seq(0, 100, 25)) +
+    facet_wrap(~ cond, ncol = 2) +
+    theme(axis.text.y = element_blank(),
+          panel.grid.minor = element_blank())
+
+```
+
+
+
+
+
+
+
+For example, wealthier individuals have a greater ability to deal with the legal consequences of breaking the law. This may lead higher SES drivers to reason--either implicitly or explicitly--that there is less of a downside to cutting because they can easily afford to pay any traffic citations they might receive. This sort of reasoning, of course, ignores the fact that cutting is not fair. But considerations of fairness may not be foremost in the minds of higher SES drivers: wealth also tends to be associated with increases in self-interested behavior,[^8] and reduced compassion.[^9]
 
 Alternatively, it may be that cutting has very little to do with ethics. Instead, higher SES drivers may be more prone to accidental cutting due to SES-related differences in attention, as outlined below. Differentiating cutting that is accidental from cutting that stems from moral considerations is important because it bears on a driver’s culpability: many ethical and legal systems assign reduced culpability in the case of accidental law-breaking--e.g., the difference between murder and manslaughter.[^10]
 
@@ -71,11 +118,16 @@ The idea that higher SES individuals might attend less to others has been explor
 
 Less attention to others suggests that high SES drivers might be more likely to accidentally cut at all-way stop intersections. But note that it is probably not the case that high SES drivers pay no attention to others. Rather, following resource limitation accounts,[^15]^,^[^16] we hypothesize that the attention that high SES drivers allocate to tracking other drivers will be sufficient to accurately monitor the queue that forms at intersections under light traffic conditions. However, as traffic becomes heavier and more resources are needed to monitor an increasingly complex queue, the likelihood that high SES drivers will lose their place in the queue and accidentally cut goes up. This account thus predicts an interaction between driver SES and traffic, such that the effect of SES on cutting is larger when traffic at an intersection is heavy (see Figure 3, left panel). In contrast, there will be no such interaction if high SES drivers are cutting due to increased ability to pay a traffic citation: one’s ability to pay remains the same regardless of the amount of traffic present at an intersection (see Figure 3, right panel).
 
+
 To summarize, the present work addresses a serious critique of Piff and colleagues leveled by Francis. It does so by attempting to replicate Piff et al.’s finding of a positive correlation between SES and illegal cutting behavior at all-way stop intersections. In addition, while it is relatively common to assume that unethical behavior among wealthier individuals is related to ethical shortcomings, here we investigate the possibility that high SES cutting might instead be accidental in that it reflects class-based differences in attention.
 
 ## Methods
 
 Under construction...
+
+
+
+
 
 
 [^1]: Corkery, M., & Protess, B. (2014, August 21). Bank of America papers show conflict and trickery in mortgages. *The New York Times*. Retrieved from http://www.nytimes.com.
@@ -84,7 +136,7 @@ Under construction...
 [^4]: Waas, M. (2010, April 23). WellPoint routinely targets breast cancer patients. *Reuters*. Retrieved from http://www.reuters.com.
 [^5]: Piff, P.K., Stancato, D.M., Côté, S., Mendoza-Denton, R., & Keltner, D. (2012). Higher social class predicts increased unethical behavior. *Proceedings of the National Academy of Sciences*, 109(11), 4086-4091.
 [^6]: Francis, G. (2012). Evidence that publication bias contaminated studies relating social class and unethical behavior. *Proceedings of the National Academy of Sciences*, 109(25), E1587.
-[^7]: California Department of Motor Vehicles. (2021). *California Vehicle Code*. Retrieved from https://leginfo.legislature.ca.gov.
+[^7]: State of California. (2021). *California Vehicle Code*. Retrieved from https://leginfo.legislature.ca.gov.
 [^8]: Piff, P.K. (2014). Wealth and the inflated self: Class, entitlement, and narcissism. *Personality and Social Psychology Bulletin*, 40(1), 34-43.
 [^9]: Stellar, J.E., Manzo, V.M., Kraus, M.W., & Keltner, D. (2012). Class and compassion: Socioeconomic factors predict responses to suffering. *Emotion*, 12(3), 449.
 [^10]: Numbers 35:16-29. (2001). *English Standard Version Bible*. Retrieved from https://esv.org.

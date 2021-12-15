@@ -21,6 +21,7 @@ summary: "Welcome \U0001F44B We know that first impressions are important, so we
   populated your new site with some initial content to help you get familiar with
   everything in no time."
 title: Welcome to Wowchemy, the website builder for Hugo
+draft: TRUE
 ---
 
 ## Overview

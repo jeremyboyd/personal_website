@@ -22,11 +22,6 @@ projects: []
 # Todo: Way to change lastmod: in yaml to automatically update on knit? This gets updated automatically in git.
 # Image should be of status x traffic interaction.
 
-# Resources
-library(tidyverse)
-library(brms)
-library(feather)
-
 # Directory storing analysis files
 analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"
 
@@ -59,13 +54,25 @@ While empirical evidence bearing on the relationship between SES and unethical b
 
 The best way to address Francis’ critique is via independent replication. The present work initiates this effort by attempting to replicate and extend Piff et al.'s Study 1. We focus on this particular study because it offers a compelling real-world demonstration of the relationship between SES and unethical behavior, and also because there are plausible explanations for the behavior of high SES participants that are largely unexplored in Piff et al., but that we attempt to address here.
 
-In Study 1 Piff and colleagues observed 274 drivers as they navigated a single all-way stop intersection in the San Francisco Bay Area. Driver SES was indexed by estimating the value of drivers’ vehicles. Piff et al. found that those driving more expensive vehicles were more likely to illegally cut at the intersection--that is, they were less likely to wait their turn in the queue that formed as cars pulled up to the intersection, as required by California Vehicle Code.[^7] Why are higher SES drivers more likely to cut? While Piff et al. acknowledge that the relationship between SES and unethical behavior is complex, their central argument across all seven studies is that wealthier individuals entertain more positive attitudes towards greed. This contributes to behaviors like lying during business negotiations (Study 5), and cheating at for-profit games (Study 6). But while greed offers a relatively straightforward account of unethical behaviors that result in material gain, it seems ill-suited to explain cutting at all-way stop intersections, where drivers seem to be accruing nothing more than mere seconds. The present work explores an alternative account of the relationship between SES and illegal cutting behavior.
+In Study 1 Piff and colleagues observed 274 drivers as they navigated a single all-way stop intersection in the San Francisco Bay Area. Driver SES was indexed by estimating the value of drivers’ vehicles. Piff et al. found that those driving more expensive vehicles were more likely to illegally cut at the intersection--that is, they were less likely to wait their turn in the queue that formed as cars pulled up to the intersection, as required by California Vehicle Code.[^7] Why are high SES drivers more likely to cut? While Piff et al. acknowledge that the relationship between SES and unethical behavior is complex, their central argument across all seven studies is that wealthier individuals entertain more positive attitudes towards greed. This contributes to behaviors like lying during business negotiations (Study 5), and cheating at for-profit games (Study 6). But while greed offers a relatively straightforward account of unethical behaviors that result in material gain, it seems ill-suited to explain cutting at all-way stop intersections, where drivers seem to be accruing nothing more than mere seconds. The present work explores an alternative account of the relationship between SES and illegal cutting behavior.
 
 ## Could high SES cutting be accidental?
 
-One interpretation of Piff and colleagues’ Study 1 is that increased cutting among high SES drivers reflects their ethical decision-making. Wealth is associated with increases in self-interested behavior[^8] and reduced compassion.[^9] These traits may manifest themselves in the (implicit or explicit) process that higher SES drivers use to determine their behavior at all-way stop intersections. Specifically, higher SES drivers should be more likely to prioritize their own desire to quickly navigate intersections over fairness to other drivers, or even the law. This account predicts increased cutting among higher SES drivers. Further, it predicts the same relationship between driver SES and cutting regardless of the amount of traffic present at the intersection. This is depicted in the left panel of Figure 3. 
+One interpretation of Piff and colleagues’ Study 1 is that increased cutting among high SES drivers reflects their ethics. Wealth is associated with increases in self-interested behavior[^8] and reduced compassion.[^9] These traits may lead high SES drivers to prioritize their own desire to quickly navigate intersections over both fairness to other drivers and the law.
 
-```{r preds, echo = FALSE, dev = "svg", fig.cap = "Predictions from two accounts of the relationship between driver SES and illegal cutting behavior at all-way stop intersections."}
+Alternatively, it may be that cutting has very little to do with ethics. Instead, high SES drivers may be more prone to accidental cutting due to SES-related differences in attention, as outlined in the following section. Differentiating cutting that is accidental from cutting based on ethics is important because it bears on a driver’s culpability: many ethical and legal systems assign reduced culpability in the case of accidental law-breaking--e.g., the difference between murder and manslaughter.[^10]
+
+How might higher SES drivers accidentally cut? Navigating all-way stop intersections requires attention to other drivers in order to determine whose turn it is to proceed. Momentary lapses of attention can cause drivers to lose track of their place in the queue, which leads to accidental cutting if they happen to go through the intersection at the wrong time. Here we suggest that high SES drivers might be more likely to cut accidentally because they devote less attention to other drivers.
+
+## SES-related differences in attention
+
+The idea that higher SES individuals attend less to others has been explored in a number of studies. Whereas lower class individuals show increased attention to the social environment and specifically to other people as a way of dealing with challenges, higher class individuals are less dependent on others for survival, which leaves them relatively free to focus on and pursue their own self-interest.[^11] These class-based differences manifest themselves in numerous subtle ways. For example, high SES individuals show increased fidgeting and decreased gaze towards their partners during conversation,[^12] as well as decreased ability to read others’ emotions,[^13] both of which are consistent with less attention to others. Indeed, the structure of many social hierarchies encourages decreased attention to others on the part of high SES individuals. In work settings for instance, there is an asymmetry of attention such that it is more likely to be directed up the hierarchy: subordinates pay more attention to their supervisors because success at work is heavily contingent on pleasing their supervisors. In contrast, supervisors pay less attention to subordinates because their success is less strongly dependent on having detailed knowledge of their subordinates’ lives and work.[^14] It is thus possible for high SES individuals--who tend to be positioned higher in social hierarchies--to learn to attend less to others as a function of their status.
+
+## How attention might affect cutting
+
+The asymmetry in attention to others among high versus low SES individuals may affect cutting behavior in a way that leads to accidental high SES cutting. This is illustrated in Figure 3, where the red and blue lines represent the relationship between driver SES and the probability of cutting in heavy and light traffic conditions, respectively. The dashed gray line represents the two traffic conditions combined. The gray line is a reasonable representation of what Piff et al. discovered in their Study 1 where--because they did not keep track of traffic--their results are an amalgamation of the light and heavy conditions. Distinguishing between cuts in light and heavy traffic is important because the two conditions make different demands on attention to other drivers. Specifically, navigating all-way stop intersections in heavy traffic is more difficult because the queues that form are more complex and demand attention to larger numbers of drivers.
+
+```{r preds, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Predictions from an attentional account of the relationship between driver SES and cutting behavior at all-way stop intersections. *P*(Cut) is the probability of cutting."}
 
 # NOTE: If you want the automatic figure numbering to render correctly you can't
 # use underscores in the name of the code block--e.g., the name has to be
@@ -73,53 +80,76 @@ One interpretation of Piff and colleagues’ Study 1 is that increased cutting a
 # can't handle underscores.
 
 # Data and figure illustrating positive effects of vehicle status and traffic
-# with and without an interaction.
-pred_data <- tibble(
-    `Vehicle Status` = as_factor(rep(1:5, each = 2, times = 2)),
-    Traffic = rep(c("Heavy", "Light"), times = 10),
-    cond = rep(c("Decision-Making\n", "Attention\n"), each = 10),
-    mean = c(40, 20, 46, 26, 52, 32, 58, 38, 64, 44, 30, 30, 40, 32, 50, 34, 60,
-             36, 70, 38)) %>%
-    
-    # Adjust datapoints down a bit
-    mutate(mean = if_else(cond == "Attention", mean - 7, mean),
-           cond = fct_rev(cond))
+# with and without an interaction. Generate lines for the different conditions
+# (driver SES x traffic x panel) that have different intercepts and slopes.
+l <- list(
+    `Driver SES` = rep(0:4, times = 6),
+    panel = rep(c("Attention", "Ethics"), each = 15),
+    Traffic = rep(c("Heavy", "Light", "Combined"), each = 5, times = 2),
+    intercept = rep(c(17.5, 14.5, 16, 20, 12, 16), each = 5),
+    slope = rep(c(3, 0, 1.5, 1.5, 1.5, 1.5), each = 5)
+)
 
-# Plot
+# Compute means based on condition intercepts & slopes
+pred_data <- pmap_dfr(
+    l,
+    .f = function(`Driver SES`, panel, Traffic, intercept, slope) {
+        tibble(
+            `Driver SES` = `Driver SES`,
+            panel = panel,
+            Traffic = Traffic,
+            intercept = intercept,
+            slope = slope,
+            y = intercept + slope * `Driver SES`
+        )
+    }) %>%
+    mutate(Traffic = fct_relevel(Traffic, c("Heavy", "Light")),
+           panel = fct_relevel(panel, "Ethics"))
+
+# Check means in order to get main effects in the Attention & Ethics condition
+# in the same range.
+# pred_data %>%
+#     group_by(panel) %>%
+#     summarize(mean = mean(y), .groups = "drop")
+# pred_data %>%
+#     group_by(Traffic, panel) %>%
+#     summarize(mean = mean(y), .groups = "drop")
+# pred_data %>%
+#     group_by(`Driver SES`, panel) %>%
+#     summarize(mean = mean(y), .groups = "drop")
+
+# Custom colors & linetypes
+my_colors <- c("#e41a1c", "#377eb8", "#a1a1a1") 
+names(my_colors) <- c("Heavy", "Light", "Combined")
+my_linetypes <- c("solid", "solid", "dashed")
+names(my_linetypes) <- c("Heavy", "Light", "Combined")
+
+# Only plot attention panel
 pred_data %>%
-    ggplot(mapping = aes(x = `Vehicle Status`,
-                         y = mean,
-                         color = Traffic,
-                         group = Traffic)) +
+    dplyr::filter(panel == "Attention") %>%
+    ggplot(mapping = aes(x = `Driver SES`, y = y, group = Traffic,
+                         color = Traffic, linetype = Traffic)) +
     geom_line() +
-    scale_color_brewer(type = "qual", palette = "Set1") +
+    scale_x_continuous(breaks = 0:4, labels = 1:5) +
+    scale_color_manual(values = my_colors) +
+    scale_linetype_manual(values = my_linetypes) +
     scale_y_continuous(name = "P(Cut)",
                        limits = c(0, 100),
                        breaks = seq(0, 100, 25)) +
-    facet_wrap(~ cond, ncol = 2) +
+    facet_wrap(~ panel, ncol = 2) +
     theme(axis.text.y = element_blank(),
-          panel.grid.minor = element_blank())
+          strip.background = element_blank(),
+          strip.text = element_blank())
 
 ```
 
+Note in Figure 3 that the blue line (light traffic) is flat: high and low SES drivers cut at the same rates when the navigation task is relatively simple. The red line (heavy traffic) is however, positively sloped. The amount of attention that high SES drivers devote to others is not sufficient to accurately keep track of the queue that forms in heavy traffic. This leads to cutting that is accidental.
 
+The alternative ethics-based hypothesis--that high SES cutting reflects normatively worse ethics among high SES drivers--predicts a different data pattern. Under the ethics hypothesis, the blue and red lines would have parallel positive slopes because high SES drivers would feel entitled to cut off other drivers regardless of whether traffic is light of heavy.
 
+## The present study
 
-
-
-
-For example, wealthier individuals have a greater ability to deal with the legal consequences of breaking the law. This may lead higher SES drivers to reason--either implicitly or explicitly--that there is less of a downside to cutting because they can easily afford to pay any traffic citations they might receive. This sort of reasoning, of course, ignores the fact that cutting is not fair. But considerations of fairness may not be foremost in the minds of higher SES drivers: wealth also tends to be associated with increases in self-interested behavior,[^8] and reduced compassion.[^9]
-
-Alternatively, it may be that cutting has very little to do with ethics. Instead, higher SES drivers may be more prone to accidental cutting due to SES-related differences in attention, as outlined below. Differentiating cutting that is accidental from cutting that stems from moral considerations is important because it bears on a driver’s culpability: many ethical and legal systems assign reduced culpability in the case of accidental law-breaking--e.g., the difference between murder and manslaughter.[^10]
-
-How might higher SES drivers accidentally cut? Navigating an all-way stop intersection requires attention to other drivers in order to determine whose turn it is to proceed. Momentary lapses of attention can cause drivers to lose track of their place in the queue, which leads to accidental cutting if they happen to go through the intersection at the wrong time. Here we suggest that higher SES drivers might be more likely to cut accidentally because they devote less attention to other drivers.
-
-The idea that higher SES individuals might attend less to others has been explored in a number of studies. Whereas lower class individuals show increased attention to the social environment and specifically to other people as a way of dealing with challenges, higher class individuals are less dependent on others for survival, which leaves them relatively free to focus on and pursue their own self-interest.[^11] These class-based differences manifest themselves in numerous subtle ways. For example, higher SES individuals show increased fidgeting and decreased gaze towards their partners during conversation,[^12] as well as decreased ability to read others’ emotions,[^13] both of which are consistent with less attention to others. Indeed, the structure of many social hierarchies encourages decreased attention to others on the part of high SES individuals. In work settings for instance, there is an asymmetry of attention such that it is more likely to be directed up the hierarchy: subordinates pay more attention to their supervisors because success at work is heavily contingent on pleasing their supervisors. In contrast, supervisors pay less attention to subordinates because their success is less strongly dependent on having detailed knowledge of their subordinates’ lives and work.[^14] It is thus possible for higher SES individuals--who tend to be positioned higher in social hierarchies--to learn to attend less to others as a function of their status.
-
-Less attention to others suggests that high SES drivers might be more likely to accidentally cut at all-way stop intersections. But note that it is probably not the case that high SES drivers pay no attention to others. Rather, following resource limitation accounts,[^15]^,^[^16] we hypothesize that the attention that high SES drivers allocate to tracking other drivers will be sufficient to accurately monitor the queue that forms at intersections under light traffic conditions. However, as traffic becomes heavier and more resources are needed to monitor an increasingly complex queue, the likelihood that high SES drivers will lose their place in the queue and accidentally cut goes up. This account thus predicts an interaction between driver SES and traffic, such that the effect of SES on cutting is larger when traffic at an intersection is heavy (see Figure 3, left panel). In contrast, there will be no such interaction if high SES drivers are cutting due to increased ability to pay a traffic citation: one’s ability to pay remains the same regardless of the amount of traffic present at an intersection (see Figure 3, right panel).
-
-
-To summarize, the present work addresses a serious critique of Piff and colleagues leveled by Francis. It does so by attempting to replicate Piff et al.’s finding of a positive correlation between SES and illegal cutting behavior at all-way stop intersections. In addition, while it is relatively common to assume that unethical behavior among wealthier individuals is related to ethical shortcomings, here we investigate the possibility that high SES cutting might instead be accidental in that it reflects class-based differences in attention.
+The present work addresses a serious critique of Piff and colleagues leveled by Francis. It does so by attempting to replicate Piff et al.’s finding of a positive correlation between SES and illegal cutting behavior at all-way stop intersections. In addition, while it is relatively common to assume that unethical behavior among wealthier individuals is related to ethical shortcomings, here we investigate the possibility that high SES cutting might instead be accidental in that it reflects class-based differences in attention.
 
 ## Methods
 
@@ -144,5 +174,3 @@ Under construction...
 [^12]: Kraus, M.W., & Keltner, D. (2009). Signs of socioeconomic status: A thin-slicing approach. *Psychological Science*, 20(1), 99-106.
 [^13]: Kraus, M.W., Côté, S., & Keltner, D. (2010). Social class, contextualism, and empathic accuracy. *Psychological Science*, 21(11), 1716-1723.
 [^14]: Fiske, S.T. (1993). Controlling other people: The impact of power on stereotyping. *American Psychologist*, 48(6), 621-628.
-[^15]: Lavie, N., & Tsal, Y. (1994). Perceptual load as a major determinant of the locus of selection in visual attention. *Perception and Psychophysics*, 56(2), 183-197.
-[^16]: Navon, D., & Gopher, D. (1979). On the economy of the human-processing system. *Psychological Review*, 86(3), 214-255.

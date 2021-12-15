@@ -30,8 +30,8 @@ options(blogdown.hugo.version = "0.87.0")
 # rstan_options(auto_write = FALSE)
 # options(mc.cores = parallel::detectCores())
 
-# Get Monda font from Google and make available in ggplots
-font_add_google(name = "Monda", family = "Monda")
+# Get font from Google and make available in ggplots
+font_add_google(name = "Armata", family = "Armata")
 showtext_auto()
 
 # Define custom ggplot theme
@@ -54,7 +54,7 @@ my_theme <- function(){
             axis.text = element_text(size = 11),
             legend.title = element_text(size = 13),
             legend.text = element_text(size = 11),
-            text = element_text(family = "Monda")
+            text = element_text(family = "Armata")
         )
 }
 

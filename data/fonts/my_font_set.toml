@@ -4,12 +4,12 @@
 name = "My fonts"
 
 # Optional Google font URL
-google_fonts = "family=Andada+Pro&family=Courier+Prime&family=Monda"
+google_fonts = "family=Andada+Pro&family=Courier+Prime&family=Armata"
 
 # Font families
-heading_font = "Monda"
+heading_font = "Armata"
 body_font = "Andada Pro"
-nav_font = "Monda"
+nav_font = "Armata"
 mono_font = "Courier Prime"
 
-# Other possible sans serif fonts for heading and nav: Nunito, Duru Sans
+# Other possible sans serif fonts for heading and nav: Nunito, Duru Sans, Monda

@@ -37,13 +37,13 @@ fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
 Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.
 
 ```{r warriors, echo = FALSE, out.width = "700", fig.cap = "The eponymous street gang from *The Warriors* (1979)."}
-knitr::include_graphics("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/warriors.webp")
+knitr::include_graphics(paste0(post_dir, "warriors.webp"))
 ```
 
 Alternatively, consider Gordon Gekko from Oliver Stone's *Wall Street* (1987; see Figure 2). Gekko commits insider trading in order to take over a company, fire its employees, and then raid their pension plan for his own benefit. Gekko's "greed is good" philosophy is consistent with numerous examples of real-world unethical behavior among high SES individuals: bankers dupe their clients into participating in investment schemes they know are doomed to fail,[^1]^,^[^2] CEOs embezzle millions to fund lavish lifestyles[^3], and companies attempt to increase their profitability by illegally harming the health and well-being of thousands.[^4]
 
 ```{r gekko, echo = FALSE, out.width = "700", fig.cap = "Gordon Gekko from *Wall Street* (1987)."}
-knitr::include_graphics("/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/gekko.jpg")
+knitr::include_graphics(paste0(post_dir, "gekko.jpg"))
 ```
 
 ## Are wealthier individuals more prone to unethical behavior?
@@ -131,11 +131,11 @@ pred_data %>%
                          color = Traffic, linetype = Traffic)) +
     geom_line() +
     scale_x_continuous(breaks = 0:4, labels = 1:5) +
-    scale_color_manual(values = my_colors) +
-    scale_linetype_manual(values = my_linetypes) +
     scale_y_continuous(name = "P(Cut)",
                        limits = c(0, 100),
                        breaks = seq(0, 100, 25)) +
+    scale_color_manual(values = my_colors) +
+    scale_linetype_manual(values = my_linetypes) +
     facet_wrap(~ panel, ncol = 2) +
     theme(axis.text.y = element_blank(),
           strip.background = element_blank(),
@@ -153,12 +153,109 @@ The present work addresses a serious critique of Piff and colleagues leveled by 
 
 ## Methods
 
+### Coders
+
+Thirty-five undergraduate students at the University of California, San Diego were trained to code vehicle values using the same five-point scale found in Piff et al.: 1 = cars worth $3,000 or less; 2 = $3001-$10,000; 3 = $10,001-$25,000; 4 = $25,001-$40,000; 5 = cars worth more than $40,000.
+
+Fix formatting around prices above...
+
+### Procedure
+
+Coders positioned themselves unobtrusively at all-way stop intersections. For example, they sat at bus stops, in parked cars, or feigned phone coversations. Coders pseudo-randomly selected approaching vehicles for coding, witht he constraint that vehicles approaching empty intersections were not selected, and commercial vehicles were not selected. Prior to stopping, the estimated value of each selected vehicle was recorded using the vehicle value scale described above, and the amount of traffic was measured--i.e., coders noted the number of lanes in the intersection in which other cars were already queued (see Figure 4). Coders then observed whether drivers waited their turn before proceeding through the intersection, or whether they jumped the queue and cut off other drivers, in violation of California Vehicle Code. As drivers pulled away, their perceived sex and age (1 = 16-35 years old; 2 = 36-55; 3 = 56 and older) were recorded, as well as the time of day.
+
+```{r intersection, echo = FALSE, out.width = "700", fig.cap = "One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word STOP. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other cars as drivers approached. For example, if there were cars waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google."}
+knitr::include_graphics(paste0(post_dir, "intersection.jpg"))
+```
+
+## Results
+
+778 drivers were observed at 46 all-way stop intersections. 88% of the data were collected in San Diego County, 8% in Los Angeles County, and 4% in Orange County.
+Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether or not a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue).
+
+Data from the the remaining 759 drivers were modeled using Bayesian hierarchical logistic regression (cite R, Stan, brms). For simplicity of presentation, traffic values of one to two were recoded as *light*, and values greater than two were recoded as *heavy*. Two separate models were fit. In the *full model*, the outcome was whether a cut had occurred, and the main predictors of interest were vehicle value, traffic, and their interaction. Covariates included driver sex, driver age, and the time of day. The clustering of data points by coder and intersection was taken into account by modeling coder and intersection as random effects with the maximal random effects structure.[^15] The *light model* was identical, except that only data from the light traffic condition were modeled.
+
+Results are shown below in Figure 5.
+
+```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Ligher and darker shading represents the 95% and 80% credible intervals, respectively."}
+
+## Vehicle value rather than vehicle status?
+
+# Load data
+df <- read_feather(paste0(analysis_dir, "cutting_data_organized.feather"))
+
+# Load models
+fit_cut <- readRDS(paste0(analysis_dir, "fit_cut.RDS"))
+fit_light <- readRDS(paste0(analysis_dir, "fit_light.RDS"))
+
+# Table relating vehicle status values to their centered versions
+status_tbl <- df %>%
+    select(vehicle_status) %>%
+    unique() %>%
+    arrange(vehicle_status) %>%
+    mutate(c_vehicle_status = vehicle_status - mean(df$vehicle_status))
+
+# Table relating traffic values to their centered versions
+traffic_tbl <- df %>%
+    select(traffic_heavy) %>%
+    unique() %>%
+    arrange(traffic_heavy) %>%
+    mutate(c_traffic_heavy = traffic_heavy - mean(df$traffic_heavy))
+
+# Table of conditions to make predictions for. Note that male, driver age, and
+# time hours are set to their centered values of 0.
+new_data <- expand.grid(
+    c_vehicle_status = unique(df$c_vehicle_status),
+    c_traffic_heavy = unique(df$c_traffic_heavy),
+    c_male = 0,
+    c_driver_age = 0,
+    c_time_hours = 0) %>%
+    as_tibble()
+new_data$cond_num <- 1:nrow(new_data)
+
+# Generate log-odds predictions for new data
+pred_lodds <- posterior_linpred(
+    fit_cut,
+    newdata = new_data,
+    re_formula = NA) %>%
+    as.data.frame()
+
+# Summarize log-odds predictions across all samples for each condition, then
+# convert to probabilities.
+pred_probs <- map_dfr(1:ncol(pred_lodds), function(col){
+    tibble(cond_num = col,
+           mean = mean(pred_lodds[, col]),
+           lower95 = quantile(pred_lodds[, col], probs = 0.025),
+           upper95 = quantile(pred_lodds[, col], probs = 0.975),
+           lower80 = quantile(pred_lodds[, col], probs = 0.1),
+           upper80 = quantile(pred_lodds[, col], probs = 0.9))
+}) %>%
+    mutate(across(where(is.double), plogis)) %>%
+    left_join(new_data %>%
+                  select(cond_num, c_vehicle_status, c_traffic_heavy),
+              by = "cond_num") %>%
+    left_join(status_tbl, by = "c_vehicle_status") %>%
+    left_join(traffic_tbl, by = "c_traffic_heavy")
+
+# Visualize interaction
+pred_probs %>%
+    mutate(Traffic = if_else(traffic_heavy == 1, "Heavy", "Light")) %>%
+    ggplot(mapping = aes(x = vehicle_status,
+                         y = mean,
+                         group = Traffic)) +
+    geom_ribbon(aes(ymin = lower95, ymax = upper95,
+                    fill = Traffic), alpha = .05) +
+    geom_ribbon(aes(ymin = lower80, ymax = upper80,
+                    fill = Traffic), alpha = .1) +
+    geom_line(aes(color = Traffic)) +
+    scale_x_continuous(name = "Vehicle Status") +
+    scale_y_continuous(name = "P(Cut)", limits = c(0, 1)) +
+    scale_color_brewer(type = "qual", palette = "Set1") +
+    scale_fill_brewer(type = "qual", palette = "Set1")
+
+# Have to do some other stuff where I report the exact effects, intervals, etc.
+```
+
 Under construction...
-
-
-
-
-
 
 [^1]: Corkery, M., & Protess, B. (2014, August 21). Bank of America papers show conflict and trickery in mortgages. *The New York Times*. Retrieved from http://www.nytimes.com.
 [^2]: Johnson, K. (2014, July 14). Citi to pay $7 billion in Justice settlement. *USA Today*. Retrieved from http://www.usatoday.com.
@@ -174,3 +271,4 @@ Under construction...
 [^12]: Kraus, M.W., & Keltner, D. (2009). Signs of socioeconomic status: A thin-slicing approach. *Psychological Science*, 20(1), 99-106.
 [^13]: Kraus, M.W., Côté, S., & Keltner, D. (2010). Social class, contextualism, and empathic accuracy. *Psychological Science*, 21(11), 1716-1723.
 [^14]: Fiske, S.T. (1993). Controlling other people: The impact of power on stereotyping. *American Psychologist*, 48(6), 621-628.
+[^15]: Barr, D.J., Levy, R., Scheepers, C., & Tily, H.J. (2013). Random effects structure for confirmatory hypothesis testing: Keep it maximal. *Journal of Memory and Language*, 68, 255-278.

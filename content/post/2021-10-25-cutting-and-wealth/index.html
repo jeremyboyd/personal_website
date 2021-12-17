@@ -71,6 +71,34 @@ Figure 3: Predictions from an attentional account of the relationship between dr
 </div>
 <div id="methods" class="section level2">
 <h2>Methods</h2>
+<div id="coders" class="section level3">
+<h3>Coders</h3>
+<p>Thirty-five undergraduate students at the University of California, San Diego were trained to code vehicle values using the same five-point scale found in Piff et al.: 1 = cars worth $3,000 or less; 2 = $3001-$10,000; 3 = $10,001-$25,000; 4 = $25,001-$40,000; 5 = cars worth more than $40,000.</p>
+<p>Fix formatting around prices above…</p>
+</div>
+<div id="procedure" class="section level3">
+<h3>Procedure</h3>
+<p>Coders positioned themselves unobtrusively at all-way stop intersections. For example, they sat at bus stops, in parked cars, or feigned phone coversations. Coders pseudo-randomly selected approaching vehicles for coding, witht he constraint that vehicles approaching empty intersections were not selected, and commercial vehicles were not selected. Prior to stopping, the estimated value of each selected vehicle was recorded using the vehicle value scale described above, and the amount of traffic was measured–i.e., coders noted the number of lanes in the intersection in which other cars were already queued (see Figure 4). Coders then observed whether drivers waited their turn before proceeding through the intersection, or whether they jumped the queue and cut off other drivers, in violation of California Vehicle Code. As drivers pulled away, their perceived sex and age (1 = 16-35 years old; 2 = 36-55; 3 = 56 and older) were recorded, as well as the time of day.</p>
+<div class="figure"><span style="display:block;" id="fig:intersection"></span>
+<img src="intersection.jpg" alt="One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word STOP. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other cars as drivers approached. For example, if there were cars waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google." width="700" />
+<p class="caption">
+Figure 4: One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word STOP. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other cars as drivers approached. For example, if there were cars waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google.
+</p>
+</div>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
+<p>778 drivers were observed at 46 all-way stop intersections. 88% of the data were collected in San Diego County, 8% in Los Angeles County, and 4% in Orange County.
+Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether or not a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue).</p>
+<p>Data from the the remaining 759 drivers were modeled using Bayesian hierarchical logistic regression (cite R, Stan, brms). For simplicity of presentation, traffic values of one to two were recoded as <em>light</em>, and values greater than two were recoded as <em>heavy</em>. Two separate models were fit. In the <em>full model</em>, the outcome was whether a cut had occurred, and the main predictors of interest were vehicle value, traffic, and their interaction. Covariates included driver sex, driver age, and the time of day. The clustering of data points by coder and intersection was taken into account by modeling coder and intersection as random effects with the maximal random effects structure.<a href="#fn15" class="footnote-ref" id="fnref15"><sup>15</sup></a> The <em>light model</em> was identical, except that only data from the light traffic condition were modeled.</p>
+<p>Results are shown below in Figure 5.</p>
+<div class="figure"><span style="display:block;" id="fig:results"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/results-1.svg" alt="Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Ligher and darker shading represents the 95% and 80% credible intervals, respectively." width="700" />
+<p class="caption">
+Figure 5: Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Ligher and darker shading represents the 95% and 80% credible intervals, respectively.
+</p>
+</div>
 <p>Under construction…</p>
 </div>
 <div class="footnotes">
@@ -90,5 +118,6 @@ Figure 3: Predictions from an attentional account of the relationship between dr
 <li id="fn12"><p>Kraus, M.W., &amp; Keltner, D. (2009). Signs of socioeconomic status: A thin-slicing approach. <em>Psychological Science</em>, 20(1), 99-106.<a href="#fnref12" class="footnote-back">↩︎</a></p></li>
 <li id="fn13"><p>Kraus, M.W., Côté, S., &amp; Keltner, D. (2010). Social class, contextualism, and empathic accuracy. <em>Psychological Science</em>, 21(11), 1716-1723.<a href="#fnref13" class="footnote-back">↩︎</a></p></li>
 <li id="fn14"><p>Fiske, S.T. (1993). Controlling other people: The impact of power on stereotyping. <em>American Psychologist</em>, 48(6), 621-628.<a href="#fnref14" class="footnote-back">↩︎</a></p></li>
+<li id="fn15"><p>Barr, D.J., Levy, R., Scheepers, C., &amp; Tily, H.J. (2013). Random effects structure for confirmatory hypothesis testing: Keep it maximal. <em>Journal of Memory and Language</em>, 68, 255-278.<a href="#fnref15" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>

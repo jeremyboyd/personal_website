@@ -141,6 +141,10 @@ pred_data %>%
           strip.background = element_blank(),
           strip.text = element_blank())
 
+# Get values for later use...
+
+
+
 ```
 
 Note in Figure 3 that the blue line (light traffic) is flat: high and low SES drivers cut at the same rates when the navigation task is relatively simple. The red line (heavy traffic) is however, positively sloped. The amount of attention that high SES drivers devote to others is not sufficient to accurately keep track of the queue that forms in heavy traffic. This leads to cutting that is accidental.
@@ -155,28 +159,27 @@ The present work addresses a serious critique of Piff and colleagues leveled by 
 
 ### Coders
 
-Thirty-five undergraduate students at the University of California, San Diego were trained to code vehicle values using the same five-point scale found in Piff et al.: 1 = cars worth $3,000 or less; 2 = $3001-$10,000; 3 = $10,001-$25,000; 4 = $25,001-$40,000; 5 = cars worth more than $40,000.
-
-Fix formatting around prices above...
+<!-- I had to set math: false in params.yaml in order to get dollar signs to render correctly here. This will probably be a problem if I want to use math anywhere else in the site.-->
+Thirty-five undergraduate students at the University of California, San Diego were trained to code vehicle values using the same five-point scale found in Piff et al.: 1 = cars worth $3,000 or less; 2 = $3,001-$10,000; 3 = $10,001-$25,000; 4 = $25,001-$40,000; 5 = cars worth more than $40,000. Vehicle value is a reliable predictor of SES.[^15]
 
 ### Procedure
 
-Coders positioned themselves unobtrusively at all-way stop intersections. For example, they sat at bus stops, in parked cars, or feigned phone coversations. Coders pseudo-randomly selected approaching vehicles for coding, witht he constraint that vehicles approaching empty intersections were not selected, and commercial vehicles were not selected. Prior to stopping, the estimated value of each selected vehicle was recorded using the vehicle value scale described above, and the amount of traffic was measured--i.e., coders noted the number of lanes in the intersection in which other cars were already queued (see Figure 4). Coders then observed whether drivers waited their turn before proceeding through the intersection, or whether they jumped the queue and cut off other drivers, in violation of California Vehicle Code. As drivers pulled away, their perceived sex and age (1 = 16-35 years old; 2 = 36-55; 3 = 56 and older) were recorded, as well as the time of day.
+Coders positioned themselves unobtrusively at all-way stop intersections. For example, they sat at bus stops, in parked cars, or feigned phone conversations. Coders pseudo-randomly selected approaching vehicles for coding, with the constraint that vehicles approaching empty intersections were not selected, and commercial vehicles were not selected. Prior to stopping, the estimated value of each selected vehicle was recorded using the vehicle value scale described above, and the amount of traffic was measured--i.e., coders noted the number of lanes in the intersection in which other cars were already queued (see Figure 4). Coders then observed whether drivers waited their turn before proceeding through the intersection, or whether they jumped the queue and cut off other drivers, in violation of California Vehicle Code. As drivers pulled away, their perceived sex and age (1 = 16-35 years old; 2 = 36-55; 3 = 56 and older) were recorded, as well as the time of day.
 
-```{r intersection, echo = FALSE, out.width = "700", fig.cap = "One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word STOP. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other cars as drivers approached. For example, if there were cars waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google."}
+```{r intersection, echo = FALSE, out.width = "700", fig.cap = "One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word *stop*. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other cars as drivers approached. For example, if there were cars waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google."}
 knitr::include_graphics(paste0(post_dir, "intersection.jpg"))
 ```
 
 ## Results
 
 778 drivers were observed at 46 all-way stop intersections. 88% of the data were collected in San Diego County, 8% in Los Angeles County, and 4% in Orange County.
-Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether or not a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue).
+Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue).
 
-Data from the the remaining 759 drivers were modeled using Bayesian hierarchical logistic regression (cite R, Stan, brms). For simplicity of presentation, traffic values of one to two were recoded as *light*, and values greater than two were recoded as *heavy*. Two separate models were fit. In the *full model*, the outcome was whether a cut had occurred, and the main predictors of interest were vehicle value, traffic, and their interaction. Covariates included driver sex, driver age, and the time of day. The clustering of data points by coder and intersection was taken into account by modeling coder and intersection as random effects with the maximal random effects structure.[^15] The *light model* was identical, except that only data from the light traffic condition were modeled.
+Data from the the remaining 759 drivers were modeled using Bayesian hierarchical logistic regression.[^16]^,^[^17]^,^[^18] For simplicity of presentation the traffic variable was recoded into the categories *light* and *heavy*, with light referring to traffic values of one or two, and heavy referring to values greater than two. Two separate models were fit. The *full model* predicted cutting as a function of vehicle value, traffic, and their interaction. Additional covariates included driver sex, driver age, and the time of day. The *light model* was identical, except that only data from the light traffic condition were used, and traffic was dropped as a predictor. The clustering of data by coder and intersection was taken into account by modeling coder and intersection as random effects with the maximal random effects structure.[^19]
 
-Results are shown below in Figure 5.
+The overall data pattern is illustrated below in Figure 5. Drivers of higher status vehicles cut more than drivers of lower status vehicles. This was especially true when considering the light traffic condition only. Drivers cut more under heavy traffic conditions. The effect of vehicle status was stronger under light than heavy traffic conditions. 
 
-```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Ligher and darker shading represents the 95% and 80% credible intervals, respectively."}
+```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Lighter and darker shading represents the 95% and 80% credible intervals, respectively."}
 
 ## Vehicle value rather than vehicle status?
 
@@ -271,4 +274,8 @@ Under construction...
 [^12]: Kraus, M.W., & Keltner, D. (2009). Signs of socioeconomic status: A thin-slicing approach. *Psychological Science*, 20(1), 99-106.
 [^13]: Kraus, M.W., Côté, S., & Keltner, D. (2010). Social class, contextualism, and empathic accuracy. *Psychological Science*, 21(11), 1716-1723.
 [^14]: Fiske, S.T. (1993). Controlling other people: The impact of power on stereotyping. *American Psychologist*, 48(6), 621-628.
-[^15]: Barr, D.J., Levy, R., Scheepers, C., & Tily, H.J. (2013). Random effects structure for confirmatory hypothesis testing: Keep it maximal. *Journal of Memory and Language*, 68, 255-278.
+[^15]: Frank, R.H. (1999). *Luxury Fever: Why Money Fails to Satisfy in an Era of Excess*. New York: The Free Press.
+[^16]: Burkner, P. (2018). Advanced Bayesian multilevel modeling with the R package brms. *The R Journal*, 10(1), 395-411.
+[^17]: Stan Development Team. (2021). *Stan Modeling Language Users Guide and Reference Manual*, Version 2.28. Retrieved from https://mc-stan.org.
+[^18]: R Core Team. (2021). *R: A Language and Environment for Statistical Computing*. Vienna, Austria: R Foundation for Statistical Computing.
+[^19]: Barr, D.J., Levy, R., Scheepers, C., & Tily, H.J. (2013). Random effects structure for confirmatory hypothesis testing: Keep it maximal. *Journal of Memory and Language*, 68, 255-278.

@@ -3,7 +3,7 @@ title: Do wealthier drivers cut more at all-way stop intersections?
 subtitle: An observational study of 759 drivers navigating 46 intersections across Southern California
 date: '2021-10-25'
 slug: cutting-and-wealth
-categories: ["social class", "unethical behavior", "driving", "attention", "Bayesian models", "hierarchical models"]
+categories: ["social class", "unethical behavior", "Bayesian models"]
 tags: []
 summary: ''
 authors: [admin]
@@ -19,8 +19,13 @@ projects: []
 
 ```{r setup, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
-# Todo: Way to change lastmod: in yaml to automatically update on knit? This gets updated automatically in git.
-# Image should be of status x traffic interaction.
+# NOTES:
+# "Last modified" gets automatically updated in git. No need to do anything in YAML.
+# The character string made up from YAML categories doesn't wrap. This causes
+# posts with long category strings to spill out of the container on small screen
+# sizes (e.g., mobile). My current not-so-great workaround is to list a small
+# enough number of categories that the categories string is short enough not to
+# need wrapping.
 
 # Directory storing analysis files
 analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"

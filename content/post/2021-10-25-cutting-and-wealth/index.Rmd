@@ -20,12 +20,14 @@ projects: []
 ```{r setup, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, eval = TRUE}
 
 # NOTES:
-# "Last modified" gets automatically updated in git. No need to do anything in YAML.
+# "Last modified" gets automatically updated in git. No need to do anything in
+# YAML.
 # The character string made up from YAML categories doesn't wrap. This causes
 # posts with long category strings to spill out of the container on small screen
-# sizes (e.g., mobile). My current not-so-great workaround is to list a small
-# enough number of categories that the categories string is short enough not to
-# need wrapping.
+# sizes (e.g., mobile). A not-so-great workaround would be to limit the number
+# of categories in order to keep the categories string short enough that
+# wrapping isn't needed. This is a bug in the Hugo theme: it takes care of
+# wrapping other stuff, but forgets about the categories string.
 
 # Directory storing analysis files
 analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"
@@ -34,9 +36,9 @@ analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"
 post_dir <- "/Users/jboyd/Documents/websites/personal_website/content/post/2021-10-25-cutting-and-wealth/"
 
 # Read in data and model
-df <- read_feather(paste0(analysis_dir, "cutting_data.feather"))
+df <- read_feather(paste0(analysis_dir, "cutting_data_organized.feather"))
 fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
-
+fit_light <- readRDS(paste0(analysis_dir, "fit_light.RDS"))
 ```
 
 Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.
@@ -77,7 +79,7 @@ The idea that higher SES individuals attend less to others has been explored in 
 
 The asymmetry in attention to others among high versus low SES individuals might affect cutting behavior in a way that leads to accidental high SES cutting. This is illustrated in Figure 3, where the red and blue lines represent the relationship between driver SES and the probability of cutting in heavy and light traffic conditions, respectively. The dashed gray line represents the two traffic conditions combined. The gray line is a reasonable representation of what Piff et al. discovered in their Study 1 where--because they did not keep track of traffic--their results are an amalgamation of the light and heavy conditions. Distinguishing between cuts in light and heavy traffic is important because the two conditions make different demands on attention to other drivers. Specifically, navigating all-way stop intersections in heavy traffic is more difficult because the queues that form are more complex and demand attention to larger numbers of drivers.
 
-```{r preds, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Predictions from an attentional account of the relationship between driver SES and cutting behavior at all-way stop intersections. *P*(Cut) is the probability of cutting."}
+```{r preds, echo = FALSE}
 
 # NOTE: If you want the automatic figure numbering to render correctly you can't
 # use underscores in the name of the code block--e.g., the name has to be
@@ -110,18 +112,25 @@ pred_data <- pmap_dfr(
     }) %>%
     mutate(Traffic = fct_relevel(Traffic, c("Heavy", "Light")),
            panel = fct_relevel(panel, "Ethics"))
+```
+
+
+```{r check, echo = FALSE, eval = FALSE}
 
 # Check means in order to get main effects in the Attention & Ethics condition
 # in the same range.
-# pred_data %>%
-#     group_by(panel) %>%
-#     summarize(mean = mean(y), .groups = "drop")
-# pred_data %>%
-#     group_by(Traffic, panel) %>%
-#     summarize(mean = mean(y), .groups = "drop")
-# pred_data %>%
-#     group_by(`Driver SES`, panel) %>%
-#     summarize(mean = mean(y), .groups = "drop")
+pred_data %>%
+    group_by(panel) %>%
+    summarize(mean = mean(y), .groups = "drop")
+pred_data %>%
+    group_by(Traffic, panel) %>%
+    summarize(mean = mean(y), .groups = "drop")
+pred_data %>%
+    group_by(`Driver SES`, panel) %>%
+    summarize(mean = mean(y), .groups = "drop")
+```
+
+```{r display, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Predictions from an attentional account of the relationship between driver SES and cutting behavior at all-way stop intersections. *P*(Cut) is the probability of cutting."}
 
 # Custom colors & linetypes
 my_colors <- c("#e41a1c", "#377eb8", "#a1a1a1") 
@@ -145,11 +154,6 @@ pred_data %>%
     theme(axis.text.y = element_blank(),
           strip.background = element_blank(),
           strip.text = element_blank())
-
-# Get values for later use...
-
-
-
 ```
 
 Note in Figure 3 that the blue line (light traffic) is flat: high and low SES drivers cut at the same rates when the navigation task is relatively simple. The red line (heavy traffic) is however, positively sloped. The amount of attention that high SES drivers devote to others is not sufficient to accurately keep track of the queue that forms in heavy traffic. This leads to cutting that is accidental.
@@ -175,25 +179,46 @@ Coders positioned themselves unobtrusively at all-way stop intersections. For ex
 knitr::include_graphics(paste0(post_dir, "intersection.jpg"))
 ```
 
+
+Data were modeled using Bayesian hierarchical logistic regression,[^16]^,^[^17]^,^[^18] with coder and intersection treated as random effects with the maximal random effects structure.[^19] For simplicity of presentation the traffic variable was recoded into the categories *light* and *heavy*, with light referring to traffic values of one or two, and heavy referring to values greater than two. Two separate models were fit. The *full model* predicted cutting as a function of vehicle value, traffic, and their interaction. Additional covariates included driver sex, driver age, and the time of day. The *light model* was identical, except that only data from the light traffic condition were used, and traffic was dropped as a predictor. The purpose of the light model was to assess whether there was a reliable effect of vehicle status on cutting when the attentional load on drivers was low.
+
 ## Results
 
+```{r stats, echo = FALSE}
+
+# Whole model fixed effects
+fixed_effects <- fixef(fit)
+fixed_names <- row.names(fixed_effects)
+fixed_effects <- fixed_effects %>%
+    as_tibble() %>%
+    mutate(effect = fixed_names) %>%
+    select(effect, Estimate, Q2.5, Q97.5)
+
+# 88% CrI for interaction effect. This is the largest interval at which the
+# interval doesn't include 0.
+inter_88 <- posterior_interval(fit,
+                   variable = "b_c_vehicle_status:c_traffic_heavy",
+                   prob = 0.88)
+
+# Light model fixed effects
+fixed_eff_light <- fixef(fit_light)
+fixed_names_light <- row.names(fixed_eff_light)
+fixed_eff_light <- fixed_eff_light %>%
+    as_tibble() %>%
+    mutate(effect = fixed_names_light) %>%
+    select(effect, Estimate, Q2.5, Q97.5)
+```
+
 778 drivers were observed at 46 all-way stop intersections. 88% of the data were collected in San Diego County, 8% in Los Angeles County, and 4% in Orange County.
-Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue).
+Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue). This left us with analyzable data from 759 drivers.
 
-Data from the the remaining 759 drivers were modeled using Bayesian hierarchical logistic regression.[^16]^,^[^17]^,^[^18] For simplicity of presentation the traffic variable was recoded into the categories *light* and *heavy*, with light referring to traffic values of one or two, and heavy referring to values greater than two. Two separate models were fit. The *full model* predicted cutting as a function of vehicle value, traffic, and their interaction. Additional covariates included driver sex, driver age, and the time of day. The *light model* was identical, except that only data from the light traffic condition were used, and traffic was dropped as a predictor. The clustering of data by coder and intersection was taken into account by modeling coder and intersection as random effects with the maximal random effects structure.[^19]
-
-The overall data pattern is illustrated below in Figure 5. Drivers of higher status vehicles cut more than drivers of lower status vehicles. This was especially true when considering the light traffic condition only. Drivers cut more under heavy traffic conditions. The effect of vehicle status was stronger under light than heavy traffic conditions. 
+For the full model the overall data pattern is illustrated below in Figure 5. Drivers of higher status vehicles cut more than drivers of lower status vehicles, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. Drivers cut more under heavy traffic conditions, *B* = `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. And while the interaction of vehicle status and traffic was not credibly different from zero at the 95% level, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, [`r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`], it was at the 88% level, [`r inter_88[1, 1] %>% format(digits = 1, nsmall = 2)`, `r inter_88[1, 2] %>% format(digits = 1, nsmall = 2)`]. All other effects in the full model were null.
 
 ```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Lighter and darker shading represents the 95% and 80% credible intervals, respectively."}
 
-## Vehicle value rather than vehicle status?
-
-# Load data
-df <- read_feather(paste0(analysis_dir, "cutting_data_organized.feather"))
-
-# Load models
-fit_cut <- readRDS(paste0(analysis_dir, "fit_cut.RDS"))
-fit_light <- readRDS(paste0(analysis_dir, "fit_light.RDS"))
+# Vehicle value rather than vehicle status?
+# Fit a single model--full.
+# Then in results, in order to investigate the interaction we do a couple of things: (1) assess the interaction at lower CrIs, and (2) fit separate light and heavy models, which will show that there's a reliable vehicle status effect in the light but not the heavy condition.
 
 # Table relating vehicle status values to their centered versions
 status_tbl <- df %>%
@@ -222,7 +247,7 @@ new_data$cond_num <- 1:nrow(new_data)
 
 # Generate log-odds predictions for new data
 pred_lodds <- posterior_linpred(
-    fit_cut,
+    fit,
     newdata = new_data,
     re_formula = NA) %>%
     as.data.frame()
@@ -259,9 +284,9 @@ pred_probs %>%
     scale_y_continuous(name = "P(Cut)", limits = c(0, 1)) +
     scale_color_brewer(type = "qual", palette = "Set1") +
     scale_fill_brewer(type = "qual", palette = "Set1")
-
-# Have to do some other stuff where I report the exact effects, intervals, etc.
 ```
+
+The light model is based on data from the light traffic condition only--the blue line in Figure 4. For these data we see a larger estimate of the vehicle status effect, *B* = `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`].
 
 Under construction...
 

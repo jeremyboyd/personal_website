@@ -222,7 +222,7 @@ Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from
 
 The overall data pattern is illustrated below in Figure 5. Drivers of higher value vehicles cut more than drivers of lower value vehicles, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. Drivers cut more under heavy traffic conditions, *B* = `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. And while the interaction of vehicle value and traffic was not credibly different from zero at the 95% level, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, [`r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`], it was at the 88% level, [`r inter_88[1, 1] %>% format(digits = 1, nsmall = 2)`, `r inter_88[1, 2] %>% format(digits = 1, nsmall = 2)`]. All other effects were null.
 
-```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle value and traffic. Lines represent predicted means. Lighter and darker shading represents the 95% and 80% credible intervals, respectively."}
+```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle value and traffic. Lines represent predicted means. Lighter and darker shading represents the 95% and 88% credible intervals, respectively."}
 
 # Table relating vehicle status values to their centered versions
 status_tbl <- df %>%
@@ -263,8 +263,8 @@ pred_probs <- map_dfr(1:ncol(pred_lodds), function(col){
            mean = mean(pred_lodds[, col]),
            lower95 = quantile(pred_lodds[, col], probs = 0.025),
            upper95 = quantile(pred_lodds[, col], probs = 0.975),
-           lower80 = quantile(pred_lodds[, col], probs = 0.1),
-           upper80 = quantile(pred_lodds[, col], probs = 0.9))
+           lower88 = quantile(pred_lodds[, col], probs = 0.06),
+           upper88 = quantile(pred_lodds[, col], probs = 0.94))
 }) %>%
     mutate(across(where(is.double), plogis)) %>%
     left_join(new_data %>%
@@ -281,7 +281,7 @@ pred_probs %>%
                          group = Traffic)) +
     geom_ribbon(aes(ymin = lower95, ymax = upper95,
                     fill = Traffic), alpha = .05) +
-    geom_ribbon(aes(ymin = lower80, ymax = upper80,
+    geom_ribbon(aes(ymin = lower88, ymax = upper88,
                     fill = Traffic), alpha = .1) +
     geom_line(aes(color = Traffic)) +
     scale_x_continuous(name = "Vehicle Value") +

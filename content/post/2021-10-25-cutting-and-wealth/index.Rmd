@@ -39,6 +39,7 @@ post_dir <- "/Users/jboyd/Documents/websites/personal_website/content/post/2021-
 df <- read_feather(paste0(analysis_dir, "cutting_data_organized.feather"))
 fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
 fit_light <- readRDS(paste0(analysis_dir, "fit_light.RDS"))
+fit_heavy <- readRDS(paste0(analysis_dir, "fit_heavy.RDS"))
 ```
 
 Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.
@@ -179,8 +180,7 @@ Coders positioned themselves unobtrusively at all-way stop intersections. For ex
 knitr::include_graphics(paste0(post_dir, "intersection.jpg"))
 ```
 
-
-Data were modeled using Bayesian hierarchical logistic regression,[^16]^,^[^17]^,^[^18] with coder and intersection treated as random effects with the maximal random effects structure.[^19] For simplicity of presentation the traffic variable was recoded into the categories *light* and *heavy*, with light referring to traffic values of one or two, and heavy referring to values greater than two. Two separate models were fit. The *full model* predicted cutting as a function of vehicle value, traffic, and their interaction. Additional covariates included driver sex, driver age, and the time of day. The *light model* was identical, except that only data from the light traffic condition were used, and traffic was dropped as a predictor. The purpose of the light model was to assess whether there was a reliable effect of vehicle status on cutting when the attentional load on drivers was low.
+Bayesian hierarchical logistic regression was used to model the relationship between vehicle value and cutting.[^16]^,^[^17]^,^[^18] The clustering of datapoints by coder and intersection was taken into account by modeling coder and intersection as random effects with the maximal random effects structure.[^19] The main predictor variables of interest were vehicle value, traffic, and their interaction. Covariates included driver sex, driver age, and time of day.
 
 ## Results
 
@@ -207,18 +207,22 @@ fixed_eff_light <- fixed_eff_light %>%
     as_tibble() %>%
     mutate(effect = fixed_names_light) %>%
     select(effect, Estimate, Q2.5, Q97.5)
+
+# Heavy model fixed effects
+fixed_eff_heavy <- fixef(fit_heavy)
+fixed_names_heavy <- row.names(fixed_eff_heavy)
+fixed_eff_heavy <- fixed_eff_heavy %>%
+    as_tibble() %>%
+    mutate(effect = fixed_names_heavy) %>%
+    select(effect, Estimate, Q2.5, Q97.5)
 ```
 
 778 drivers were observed at 46 all-way stop intersections. 88% of the data were collected in San Diego County, 8% in Los Angeles County, and 4% in Orange County.
-Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue). This left us with analyzable data from 759 drivers.
+Nineteen of the 778 drivers, accounting for 2.4% of the data, were excluded from analysis, either because they were not visible enough to record their sex and age, or because it was not possible to definitively determine whether a cut had occurred (e.g., due to pedestrians or cyclists disrupting the queue). This left analyzable data from 759 drivers.
 
-For the full model the overall data pattern is illustrated below in Figure 5. Drivers of higher status vehicles cut more than drivers of lower status vehicles, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. Drivers cut more under heavy traffic conditions, *B* = `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. And while the interaction of vehicle status and traffic was not credibly different from zero at the 95% level, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, [`r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`], it was at the 88% level, [`r inter_88[1, 1] %>% format(digits = 1, nsmall = 2)`, `r inter_88[1, 2] %>% format(digits = 1, nsmall = 2)`]. All other effects in the full model were null.
+The overall data pattern is illustrated below in Figure 5. Drivers of higher value vehicles cut more than drivers of lower value vehicles, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. Drivers cut more under heavy traffic conditions, *B* = `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. And while the interaction of vehicle value and traffic was not credibly different from zero at the 95% level, *B* = `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, [`r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_effects %>% filter(effect == "c_vehicle_status:c_traffic_heavy") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`], it was at the 88% level, [`r inter_88[1, 1] %>% format(digits = 1, nsmall = 2)`, `r inter_88[1, 2] %>% format(digits = 1, nsmall = 2)`]. All other effects were null.
 
-```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle status and traffic. Lines represent predicted means. Lighter and darker shading represents the 95% and 80% credible intervals, respectively."}
-
-# Vehicle value rather than vehicle status?
-# Fit a single model--full.
-# Then in results, in order to investigate the interaction we do a couple of things: (1) assess the interaction at lower CrIs, and (2) fit separate light and heavy models, which will show that there's a reliable vehicle status effect in the light but not the heavy condition.
+```{r results, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Probability of cutting as a function of vehicle value and traffic. Lines represent predicted means. Lighter and darker shading represents the 95% and 80% credible intervals, respectively."}
 
 # Table relating vehicle status values to their centered versions
 status_tbl <- df %>%
@@ -280,13 +284,13 @@ pred_probs %>%
     geom_ribbon(aes(ymin = lower80, ymax = upper80,
                     fill = Traffic), alpha = .1) +
     geom_line(aes(color = Traffic)) +
-    scale_x_continuous(name = "Vehicle Status") +
+    scale_x_continuous(name = "Vehicle Value") +
     scale_y_continuous(name = "P(Cut)", limits = c(0, 1)) +
     scale_color_brewer(type = "qual", palette = "Set1") +
     scale_fill_brewer(type = "qual", palette = "Set1")
 ```
 
-The light model is based on data from the light traffic condition only--the blue line in Figure 4. For these data we see a larger estimate of the vehicle status effect, *B* = `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`].
+Two additional models were fit in order to follow up on the interaction of vehicle value and traffic. The *light model* was based on data from the light traffic condition only (the blue line in Figure 5). This demonstrates that drivers of higher value vehicles cut more than drivers of lower value vehicles under light traffic conditions, *B* = `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. In contrast, the *heavy model*, which was based on data from the heavy traffic condition only (the red line in Figure 5), showed a null effect of vehicle value on cutting, *B* = `r fixed_eff_heavy %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_eff_heavy %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_eff_heavy %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`].
 
 Under construction...
 

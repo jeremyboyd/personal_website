@@ -4,12 +4,12 @@
 name = "My fonts"
 
 # Optional Google font URL
-google_fonts = "family=Andada+Pro&family=Courier+Prime&family=Rajdhani:wght@300"
+google_fonts = "family=Andada+Pro&family=Courier+Prime&family=Kanit:wght@200"
 
 # Font families
-heading_font = "Rajdhani"
+heading_font = "Kanit"
 body_font = "Andada Pro"
-nav_font = "Rajdhani"
+nav_font = "Kanit"
 mono_font = "Courier Prime"
 
 # Other possible sans serif fonts for heading and nav: Nunito, Duru Sans, Monda,

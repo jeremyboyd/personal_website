@@ -30,19 +30,13 @@ options(blogdown.hugo.version = "0.87.0")
 # options(mc.cores = parallel::detectCores())
 
 # Get font from Google and make available in ggplots
-# NOTE: This uses curl::curl_download(), which seems to be blocked when iCloud
-# Private Relay is turned on.
+# NOTE: If I change fonts in ggplot figures I need to turn off iCloud Private
+# Relay in order to successfully run this line. When it's on it causes errors in
+# curl::curl_download(), which is what font_add_google() uses on the backend.
 font_add_google(name = "Kanit",
                 family = "Kanit",
                 regular.wt = 200,
                 bold.wt = 300)
-# Since I'm having trouble laoding fonts directly from Google, manually download
-# and make available with font_add(). Don't know if this is working. Seems like
-# I'm only able to use Kanit:wght@200, which is the one specified in
-# my_font_set.
-# font_add(family = "Kanit",
-#          regular = "/Library/Fonts/Kanit/Kanit-Regular.ttf",
-#          bold = "/Library/Fonts/Kanit/Kanit-Bold.ttf")
 showtext_auto()
 
 # Define custom ggplot theme

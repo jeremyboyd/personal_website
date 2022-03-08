@@ -10,6 +10,8 @@ library(feather)
 library(blogdown)
 library(sysfonts)
 library(showtext)
+library(curl)           # Required for sysfonts::font_add_google()
+library(jsonlite)       # Required for sysfonts::font_add_google()
 
 # Now set options to customize the behavior of blogdown for this project. Below
 # are a few sample options; for more options, see
@@ -31,8 +33,16 @@ options(blogdown.hugo.version = "0.87.0")
 # options(mc.cores = parallel::detectCores())
 
 # Get font from Google and make available in ggplots
-font_add_google(name = "Kanit", family = "Kanit")
-showtext_auto()
+# Currently throwing this error
+# Error in curl::curl_download(url, dest, handle = handle) : Timeout was
+# reached: [] Failed to connect to fonts.gstatic.com port 80: Operation timed
+# out
+# font_add_google(name = "Kanit",
+#                 family = "Kanit")
+# Load font from system rather than downloading. Will this work when served from
+# Netlify?
+font_add(family = "Kanit", regular = "/Library/Fonts")
+showtext_auto(enable = TRUE)
 
 # Define custom ggplot theme
 my_theme <- function(){

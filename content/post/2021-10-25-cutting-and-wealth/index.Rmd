@@ -40,6 +40,9 @@ df <- read_feather(paste0(analysis_dir, "cutting_data_organized.feather"))
 fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
 fit_light <- readRDS(paste0(analysis_dir, "fit_light.RDS"))
 fit_heavy <- readRDS(paste0(analysis_dir, "fit_heavy.RDS"))
+
+# Initial figure number
+figure_num <- 1
 ```
 
 Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.
@@ -65,6 +68,15 @@ The best way to address Francis’ critique is via independent replication. The 
 In Study 1 Piff and colleagues observed 274 drivers as they navigated a single all-way stop intersection in the San Francisco Bay Area. Driver SES was indexed by estimating the value of drivers’ vehicles. Piff et al. found that those driving more expensive vehicles were more likely to illegally cut at the intersection--that is, they were less likely to wait their turn in the queue that formed as cars pulled up to the intersection, as required by California Vehicle Code.[^7] Why are high SES drivers more likely to cut? While Piff et al. acknowledge that the relationship between SES and unethical behavior is complex, their central argument across all seven studies is that wealthier individuals entertain more positive attitudes towards greed. This contributes to behaviors like lying during business negotiations (Study 5), and cheating at for-profit games (Study 6). But while greed offers a relatively straightforward account of unethical behaviors that result in material gain, it seems ill-suited to explain cutting at all-way stop intersections, where drivers seem to be accruing nothing more than mere seconds. The present work explores an alternative account of the relationship between SES and illegal cutting behavior.
 
 ## Could high SES cutting be accidental?
+
+
+- Accidental
+- Differences in attention?
+- Less able to handle heavy traffic situations, so wealth effect is limited to heavy traffic.
+- Alternatively, if they're cutting under light traffic circumstances then the idea that there's accidental cutting due to attentional differences is undermined. In this case the data would be more consistent with cutting due to ethics.
+
+
+
 
 One interpretation of Piff and colleagues’ Study 1 is that increased cutting among high SES drivers reflects their ethics. Wealth is associated with increases in self-interested behavior[^8] and reduced compassion.[^9] These traits may lead high SES drivers to prioritize their own desire to quickly navigate intersections over both fairness to other drivers and the law.
 

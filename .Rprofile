@@ -8,10 +8,7 @@ library(purrr)
 library(brms)
 library(feather)
 library(blogdown)
-library(sysfonts)
 library(showtext)
-library(curl)           # Required for sysfonts::font_add_google()
-library(jsonlite)       # Required for sysfonts::font_add_google()
 
 # Now set options to customize the behavior of blogdown for this project. Below
 # are a few sample options; for more options, see
@@ -33,16 +30,20 @@ options(blogdown.hugo.version = "0.87.0")
 # options(mc.cores = parallel::detectCores())
 
 # Get font from Google and make available in ggplots
-# Currently throwing this error
-# Error in curl::curl_download(url, dest, handle = handle) : Timeout was
-# reached: [] Failed to connect to fonts.gstatic.com port 80: Operation timed
-# out
-# font_add_google(name = "Kanit",
-#                 family = "Kanit")
-# Load font from system rather than downloading. Will this work when served from
-# Netlify?
-font_add(family = "Kanit", regular = "/Library/Fonts")
-showtext_auto(enable = TRUE)
+# NOTE: This uses curl::curl_download(), which seems to be blocked when iCloud
+# Private Relay is turned on.
+font_add_google(name = "Kanit",
+                family = "Kanit",
+                regular.wt = 200,
+                bold.wt = 300)
+# Since I'm having trouble laoding fonts directly from Google, manually download
+# and make available with font_add(). Don't know if this is working. Seems like
+# I'm only able to use Kanit:wght@200, which is the one specified in
+# my_font_set.
+# font_add(family = "Kanit",
+#          regular = "/Library/Fonts/Kanit/Kanit-Regular.ttf",
+#          bold = "/Library/Fonts/Kanit/Kanit-Bold.ttf")
+showtext_auto()
 
 # Define custom ggplot theme
 my_theme <- function(){
@@ -56,15 +57,15 @@ my_theme <- function(){
             axis.title.y = element_text(angle = 0, vjust = .5,
                                         
                                         # Increase axis title's right margin
-                                        margin = margin(r = 5))
+                                        margin = margin(r = 5)),
             
             # Increase font sizes & set font
-            ,strip.text = element_text(size = 15),
-            axis.title = element_text(size = 14),
-            axis.text = element_text(size = 12),
-            legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12),
-            text = element_text(family = "Kanit")
+            text = element_text(family = "Kanit", face = "plain"),
+            strip.text = element_text(size = 16),
+            axis.title = element_text(size = 15),
+            axis.text = element_text(size = 13),
+            legend.title = element_text(size = 15),
+            legend.text = element_text(size = 13)
         )
 }
 

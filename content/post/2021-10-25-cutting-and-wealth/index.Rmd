@@ -28,6 +28,9 @@ projects: []
 # of categories in order to keep the categories string short enough that
 # wrapping isn't needed. This is a bug in the Hugo theme: it takes care of
 # wrapping other stuff, but forgets about the categories string.
+# If I make any font changes in ggplot figures then they this file has to be
+# re-knit before they show up on the published site.
+
 
 # Directory storing analysis files
 analysis_dir <- "/Users/jboyd/Documents/studies/cutting/cutting_bayesian/"
@@ -40,9 +43,6 @@ df <- read_feather(paste0(analysis_dir, "cutting_data_organized.feather"))
 fit <- readRDS(file = paste0(analysis_dir, "fit_cut.RDS"))
 fit_light <- readRDS(paste0(analysis_dir, "fit_light.RDS"))
 fit_heavy <- readRDS(paste0(analysis_dir, "fit_heavy.RDS"))
-
-# Initial figure number
-figure_num <- 1
 ```
 
 Does an individual's socioeconomic status (SES) predict their tendency toward unethical behavior? If so, who is more likely to behave unethically--the rich or the poor? Pop culture abounds with depictions of each. For example, Walter Hill's cult classic *The Warriors* (1979; see Figure 1) features numerous violent confrontations between New York City street gangs. This depiction is consistent with the idea that low SES individuals live in environments in which resources are relatively scarce, and so must lie, cheat, steal--and in some cases even kill--to survive.

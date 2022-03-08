@@ -31,7 +31,7 @@ options(blogdown.hugo.version = "0.87.0")
 # options(mc.cores = parallel::detectCores())
 
 # Get font from Google and make available in ggplots
-font_add_google(name = "Armata", family = "Armata")
+font_add_google(name = "Kanit", family = "Kanit")
 showtext_auto()
 
 # Define custom ggplot theme

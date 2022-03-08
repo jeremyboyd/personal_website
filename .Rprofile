@@ -60,7 +60,7 @@ my_theme <- function(){
                                         margin = margin(r = 5)),
             
             # Increase font sizes & set font
-            text = element_text(family = "Kanit", face = "plain"),
+            text = element_text(family = "Kanit", face = "bold"),
             strip.text = element_text(size = 16),
             axis.title = element_text(size = 15),
             axis.text = element_text(size = 13),

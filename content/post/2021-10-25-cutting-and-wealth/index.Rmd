@@ -140,7 +140,7 @@ pred_data %>%
     summarize(mean = mean(y), .groups = "drop")
 ```
 
-```{r display, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Predictions from an attentional account of the relationship between driver SES and cutting behavior at all-way stop intersections. *P*(Cut) is the probability of cutting."}
+```{r display, echo = FALSE, dev = "svg", out.width = "700", fig.cap = "Predictions from an attentional account of the relationship between driver SES and cutting behavior at all-way stop intersections. *P(Cut)* is the probability of cutting."}
 
 # Custom colors & linetypes
 traffic_levels <- c("Heavy Traffic", "Piff et al.", "Light Traffic")
@@ -191,7 +191,7 @@ Thirty-five undergraduate students at the University of California, San Diego we
 
 Coders positioned themselves unobtrusively at all-way stop intersections. For example, they sat at bus stops, in parked cars, or feigned phone conversations. Coders pseudo-randomly selected approaching vehicles for coding, with the constraint that vehicles approaching empty intersections were not selected, and commercial vehicles were not selected. Prior to stopping, the estimated value of each selected vehicle was recorded using the vehicle value scale described above, and the amount of traffic was measured---i.e., coders noted the number of lanes in the intersection in which other cars were already queued (see Figure 4). Coders then observed whether drivers waited their turn before proceeding through the intersection, or whether they jumped the queue and cut off other drivers, in violation of California Vehicle Code. As drivers pulled away, their perceived sex and age (1 = 16-35 years old; 2 = 36-55; 3 = 56 and older) were recorded, as well as the time of day.
 
-```{r intersection, echo = FALSE, out.width = "700", fig.cap = "One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word *stop*. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other vehicles as drivers approached. For example, if there were vehicles waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google."}
+```{r intersection, echo = FALSE, out.width = "700", fig.cap = "One of the intersections observed in the study was at Voight and Gilman in La Jolla, California. Lanes entering the intersection are marked with the word *STOP*. The amount of traffic that drivers dealt with was quantified as the number of lanes that were already occupied by other vehicles as drivers approached. For example, if there were vehicles waiting in two other lanes as a driver approached, then traffic was coded as two. Image courtesy of Google."}
 knitr::include_graphics(paste0(post_dir, "intersection.jpg"))
 ```
 
@@ -308,6 +308,33 @@ pred_probs %>%
 Two additional models were fit in order to follow up on the interaction of vehicle value and traffic. The *light model* was based on data from the light traffic condition only (the blue line in Figure 5). Results from the light model demonstrate that drivers of higher value vehicles cut more than drivers of lower value vehicles under light traffic conditions, *B* = `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_eff_light %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`]. In contrast, the *heavy model*---which was based on data from the heavy traffic condition only (the red line in Figure 5)---showed a null effect of vehicle value on cutting, *B* = `r fixed_eff_heavy %>% filter(effect == "c_vehicle_status") %>% pull(Estimate) %>% format(digits = 1, nsmall = 2)`, 95% CrI [`r fixed_eff_heavy %>% filter(effect == "c_vehicle_status") %>% pull(Q2.5) %>% format(digits = 1, nsmall = 2)`, `r fixed_eff_heavy %>% filter(effect == "c_vehicle_status") %>% pull(Q97.5) %>% format(digits = 1, nsmall = 2)`].
 
 ## Discussion
+
+In the present work, 759 drivers were inconspicuously observed as they navigated all-way stop intersections in Southern California. Coders rated the value of drivers’ vehicles and noted whether they waited their turn in the queues that formed at intersections, or illegally cut. The results demonstrate that drivers of more expensive vehicles were more likely to cut than drivers of less expensive vehicles, even when statistically accounting for the contributions of traffic, driver sex, driver age, and time of day. This replicates Piff et al.’s finding of a positive correlation between driver SES and cutting, and undercuts Francis’ suggestion that the Piff et al. results are spurious.
+
+The present findings build on Piff et al.’s work in two important ways. First, the results demonstrate that the outcome of Piff et al.’s Study 1 was not determined by the particular drivers or intersection studied. We show that the relationship between driver SES and cutting generalizes to a much larger sample of drivers (759 vs. 274) navigating a much larger set of intersections (46 vs. one) in a different geographic region of the country (Southern California vs. the San Francisco Bay Area).
+
+Second, the present work provides a more detailed investigation of the socio-cognitive mechanisms that might account for driver behavior at all-way stop intersections. Piff et al. emphasized the role that attitudes towards greed play in contributing to an array of unethical behaviors. But while the greed hypothesis is well-suited to explaining unethical behavior in the pursuit of material gain, its ability to account for cutting---which does not straightforwardly result in material gain---is questionable. Instead, we hypothesized that high SES cutting might be accidental, and outlined an account in which high SES cutting tends to be especially prevalent under high traffic conditions (see Figure 3): higher SES drivers are able to keep track of the simpler queues that form in light traffic, but fail to devote adequate attentional resources to keeping track of the more complex queues that form in heavy traffic. They essentially lose their place in heavy traffic queue, and are thus more likely to cut accidentally.
+
+While we did find evidence of an interaction between driver SES and traffic, it did not match the predictions of the accidental cutting hypothesis (see Figure 5). Instead, there was evidence that higher SES drivers cut more than lower SES drivers, but only when traffic was light: under heavy traffic conditions there was a null effect of driver SES on cutting.
+
+
+
+
+
+
+
+
+tested for an interaction between driver SES and traffic, based on the idea that the presence or absence of an interaction would be informative about the types of mechanisms that underlie driver behavior.
+
+
+
+Specifically, the present study looked to see whether high SES cutting might be accidental in the sense that it reflects cognitive resource limitations rather than decision making based on one’s ethics. If higher SES individuals devote less attention to others generally [13- 15], then the amount of attention they allocate to tracking other drivers at all-way stop intersections might be insufficient to accurately represent high traffic queues. This predicts increased cutting by higher SES drivers under high traffic conditions—i.e., an interaction between driver SES and traffic (see Fig. 1, left panel).
+
+The results of Study 2, however, failed to show an interaction (see Fig. 4). Clearly this outcome does not prove that cutting among higher SES drivers is not accidental. Future studies featuring more power or using different methods may yet be able to find support for the accidental cutting hypothesis. At the same time though, the Study 2 data pattern is not unexpected. If higher SES drivers do not perceive the financial penalty associated with cutting to be particularly burdensome, then they will cut more often, regardless of the amount of traffic present at an intersection. This matches the overall behavior that was observed.
+
+It is also worth noting that although we argued above against the idea that cutting might be straightforwardly attributable to greed in the same way that cheating in order to win money is, there is a more subtle sense in which greed and other characteristics that are associated with SES—including increased entitlement [9], and reduced compassion [10]—are consistent with the present results. All of these factors index an increased focus on maximizing one’s own self- interest, and decreased consideration of others. When higher SES drivers commit unethical acts then, it seems likely that a number of factors might be included in their cost-benefit analysis. Their wealth insulates them from the negative consequences of a traffic citation, thereby decreasing the relative costs of illegal behavior. And cutting serves their own interests, which increases its benefits.
+
+To conclude, one of the motivations for the present work was to question the commonly held belief that high SES individuals live by a different moral code than others, and that this contributes to the unethical acts that they commit. We considered a specific type of unethical behavior—cutting at all-way stop intersections—and outlined a hypothesis that views cutting among higher SES drivers as accidental. The data, however, failed to support the notion of accidental cutting. This suggests that SES-related differences in ethics may provide the best explanation for cutting behavior at all-way stop intersections.
 
 [^1]: Corkery, M., & Protess, B. (2014, August 21). Bank of America papers show conflict and trickery in mortgages. *The New York Times*. Retrieved from http://www.nytimes.com.
 [^2]: Johnson, K. (2014, July 14). Citi to pay $7 billion in Justice settlement. *USA Today*. Retrieved from http://www.usatoday.com.

@@ -1,7 +1,12 @@
-/* .see-all is the link from the Recent Posts widget to the posts archive at /post. Override default styling on it to get normal capitalization and Nunito font. */
+/* .see-all is the link from the Recent Posts widget to the posts archive at /post. Override default styling on it to get normal capitalization and Kanit font. */
 
 .see-all {
   margin-top: 2rem;
   text-transform: capitalize;
-  font-family: "Nunito";
+  font-family: "Kanit";
+}
+
+/* Styling for figure captions */
+.caption {
+  font-family: "Kanit";
 }

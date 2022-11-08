@@ -17,9 +17,12 @@ publication: '*Language, 91*(4), 55-83'
 publication_types:
 - "2"
 publishDate: "2011"
-summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus
-  ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
+summary: 
 tags:
-title: 'Learning what not to say: The role of statistical preemption and categorization in a-adjective production'
+    - language learning
+    - statistical preemption
+    - categorization
+    - a-adjectives
+title: "Learning what not to say: The role of statistical preemption and categorization in a-adjective production"
 url_pdf: https://jeremyboyd.org/pdf/Boyd2011.pdf
 ---

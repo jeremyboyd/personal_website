@@ -5,9 +5,9 @@ highlight_name: true
 organizations:
 - name: ""
   url: ""
-role: Computational social scientist
+role: Behavioral & data scientist
 superuser: true
-title: Jeremy Boyd, Ph.D.
+title: Jeremy Boyd
 ---
 
 I develop evidence-based interventions aimed at improving human developmental outcomes. One branch of this work has concentrated on language learning in children and adults. Another has focused on practices that organizations can adopt to maximize worker morale and productivity. In both lines of research, I collect data using experimental and observational methods, and analyze it in statistical and machine learning models.

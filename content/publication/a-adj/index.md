@@ -6,23 +6,25 @@ author_notes:
 authors:
 - admin
 - Adele E. Goldberg
-date: "2011-01-01"
+date: "2011-03-01"
 featured: false
 image:
   caption: 'Image credit: [**Unsplash**](https://unsplash.com/photos/jdD8gXaTZsc)'
   focal_point: ""
-  preview_only: false
+  preview_only: true
 projects: []
-publication: '*Language, 91*(4), 55-83'
+publication: '*Language, 87*(1), 55-83'
 publication_types:
 - "2"
 publishDate: "2011"
 summary: 
 tags:
-    - language learning
-    - statistical preemption
-    - categorization
-    - a-adjectives
+    - language acquisition
+    - statistical learning
+    - reasoning
+    - negative evidence
+    - preemption
+    - entrenchment
 title: "Learning what not to say: The role of statistical preemption and categorization in a-adjective production"
 url_pdf: https://jeremyboyd.org/pdf/Boyd2011.pdf
 ---

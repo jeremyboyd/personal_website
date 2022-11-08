@@ -1,7 +1,7 @@
 ---
 # An instance of the Pages widget.
 # Documentation: https://wowchemy.com/docs/page-builder/
-active: false
+active: true
 widget: pages
 
 # This file represents a page section.
@@ -36,8 +36,9 @@ design:
   #   3 = Card
   #   4 = Citation (publication only)
   view: 4
----
 
-{{% callout note %}}
-Quickly discover relevant content by [filtering publications](./publication/).
-{{% /callout %}}
+# {{% callout note %}}
+# Quickly discover relevant content by [filtering publications](./publication/).
+# {{% /callout %}}
+
+---

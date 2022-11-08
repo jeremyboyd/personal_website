@@ -7,11 +7,10 @@ abstract: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere 
   dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus.
   Vestibulum sit amet erat at nulla eleifend gravida.
 author_notes:
-- Equal contribution
-- Equal contribution
+-
 authors:
 - admin
-- Robert Ford
+- Adele E. Goldberg
 date: "2015-09-01T00:00:00Z"
 doi: ""
 featured: false
@@ -20,20 +19,20 @@ image:
   focal_point: ""
   preview_only: false
 projects: []
-publication: '*Journal of Source Themes, 1*(1)'
+publication: '*Language, 91*(4)'
 publication_short: ""
 publication_types:
 - "2"
-publishDate: "2017-01-01T00:00:00Z"
+publishDate: "2015"
 slides: example
 summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus
   ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum.
 tags:
 - Source Themes
-title: An example journal article
+title: "A-adjectives, statistical preemption, and the evidence: Reply to Yang"
 url_code: https://github.com/wowchemy/wowchemy-hugo-themes
 url_dataset: ""
-url_pdf: http://arxiv.org/pdf/1512.04133v1
+url_pdf: https://jeremyboyd.org/pdf/Boyd2011.pdf
 url_poster: ""
 url_project: ""
 url_slides: ""

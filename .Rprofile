@@ -33,10 +33,10 @@ options(blogdown.hugo.version = "0.87.0")
 # NOTE: If I change fonts in ggplot figures I need to turn off iCloud Private
 # Relay in order to successfully run this line. When it's on it causes errors in
 # curl::curl_download(), which is what font_add_google() uses on the backend.
-font_add_google(name = "Kanit",
-                family = "Kanit",
-                regular.wt = 200,
-                bold.wt = 300)
+font_add_google(name = "Quicksand",
+                family = "Quicksand",
+                regular.wt = 300,
+                bold.wt = 400)
 showtext_auto()
 
 # Define custom ggplot theme
@@ -46,7 +46,7 @@ my_theme <- function(){
     theme_classic() %+replace%
         
         theme(
-            panel.grid.major = element_line(color = "gray90", size = .2),
+            panel.grid.major = element_line(color = "gray90", linewidth = .2),
             panel.spacing = unit(2, "lines"),
             axis.title.y = element_text(angle = 0, vjust = .5,
                                         
@@ -54,7 +54,7 @@ my_theme <- function(){
                                         margin = margin(r = 5)),
             
             # Increase font sizes & set font
-            text = element_text(family = "Kanit", face = "bold"),
+            text = element_text(family = "Quicksand", face = "bold"),
             strip.text = element_text(size = 16),
             axis.title = element_text(size = 15),
             axis.text = element_text(size = 13),

@@ -9,9 +9,9 @@ authors:
 date: "2011-03-01"
 featured: false
 image:
-  caption: 'Image credit: [**Unsplash**](https://unsplash.com/photos/jdD8gXaTZsc)'
+  caption:
   focal_point: ""
-  preview_only: true
+  preview_only: false
 projects: []
 publication: '*Language, 87*(1), 55-83'
 publication_types:

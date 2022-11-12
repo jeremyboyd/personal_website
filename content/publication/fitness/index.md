@@ -9,7 +9,7 @@ authors:
 - Charles H. Hillman
 author_notes:
     -
-date: "2014-11-06"
+date: "2014-06-01"
 publishDate: "2014"
 abstract: 'Event-related brain potentials (ERPs) have been instrumental for discerning the relationship between children’s aerobic fitness and aspects of cognition, yet language processing remains unexplored. ERPs linked to the processing of semantic information (the N400) and the analysis of language structure (the P600) were recorded from higher and lower aerobically fit children as they read normal sentences and those containing semantic or syntactic violations. Results revealed that higher fit children exhibited greater N400 amplitude and shorter latency across all sentence types, and a larger P600 effect for syntactic violations. Such findings suggest that higher fitness may be associated with a richer network of words and their meanings, and a greater ability to detect and/or repair syntactic errors. The current findings extend previous ERP research explicating the cognitive benefits associated with greater aerobic fitness in children and may have important implications for learning and academic performance.'
 tags:

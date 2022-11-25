@@ -17,7 +17,7 @@ tags:
     - Artificial language learning
     - Novel construction learning
     - Statistical learning
-url_pdf: https://jeremyboyd.org/pdf/Wonnacott2021.pdf
+url_pdf: https://jeremyboyd.org/pdf/Wonnacott2012.pdf
 featured: false
 image:
   caption:

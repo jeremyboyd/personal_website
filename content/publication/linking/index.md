@@ -14,7 +14,7 @@ tags:
     - Novel construction learning
     - Linking rules
     - Languge development
-url_pdf: https://jeremyboyd.org/pdf/Boyd2009.pdf
+url_pdf: https://jeremyboyd.org/pdf/Boyd2009b.pdf
 featured: false
 image:
   caption:

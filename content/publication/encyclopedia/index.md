@@ -1,6 +1,6 @@
 ---
 title: "Statistical preemption"
-publication: '*Encyclopedia of Language Development*. P.J. Brooks & V. Kempe (Eds.). Thousand Oaks, CA: SAGE Publications.'
+publication: '*Encyclopedia of Language Development*. P.J. Brooks & V. Kempe (Eds.). Thousand Oaks, CA: SAGE Publications'
 authors:
 - admin
 author_notes:

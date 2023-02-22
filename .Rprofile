@@ -11,7 +11,7 @@ library(blogdown)
 library(showtext)
 
 # Now set options to customize the behavior of blogdown for this project. Below
-# are a few sample options; for more options, see
+# are a few sample options; for more options, see 
 # https://bookdown.org/yihui/blogdown/global-options.html
 options(
   # to automatically serve the site on RStudio startup, set this option to TRUE

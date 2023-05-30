@@ -1,0 +1,228 @@
+---
+title: Scraping Medicare Part D antibiotic prescribing data
+subtitle: Web pages generated from JavaScript present scraping difficulties that can be overcome with Selenium
+date: '2023-05-25'
+slug: scraping-with-selenium
+categories: []
+tags: ["Medicare Part D", "antibiotics", "web scraping", "Selenium", "Docker", "R", "rvest"]
+summary: ''
+authors: [admin]
+lastmod: '2023-05-25T15:21:17-06:00'
+featured: no
+image:
+    placement: 3
+    caption: ''
+    focal_point: 'Center'
+    preview_only: no
+projects: []
+---
+
+```{r setup, echo = FALSE, message = FALSE, error = FALSE}
+
+library(jsonlite)
+options(blogdown.knit.on_save = FALSE)
+
+```
+
+Scraping a table from a web page is typically pretty simple: just look in the page's HTML for `<table>` tags, like this:
+
+```html
+<table>
+  <tr>
+    <th>A</th>
+    <th>B</th> 
+    <th>C</th>
+  </tr>
+  <tr>
+    <td>x</td>
+    <td>1</td> 
+    <td>2</td>
+  </tr>
+  <tr>
+    <td>y</td>
+    <td>3</td> 
+    <td>4</td>
+  </tr>
+</table>
+
+```
+
+This HTML gives us a table with column headers *A*, *B*, and *C*, and two rows: one with data *x*, *1*, and *2*, and the other with data *y*, *3*, and *4*.
+
+Modern web-scraping tools like R's <a href="https://rvest.tidyverse.org" target="_blank">rvest</a> package make it easy to find tables and read them into your scripts for further processing and analysis. Unfortunately, not all tables are created in the same way. Take the table below, for example, which occurs on <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider/api-docs" target="_blank">this page</a>:
+
+![](dataset_versions.png)
+
+The table lists versions (years of data) for the <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider" target="_blank">Medicare Part D by-provider dataset</a>. Medicare Part D is the name for Medicare's prescription drug benefit. The by-provider dataset contains prescribing data organized by providers---i.e., for each year of data there's one row for each provider, with fields describing features of providers, the prescriptions they wrote, and the beneficiaries they wrote them for. I worked on a study where I used this dataset to model antibiotic prescribing rates across different geographic regions. The Center for Medicare and Medicaid Services, which publishes the dataset, makes it easy to get via API. The API call requries a UUID (universally unique identifier; the second column in the table above). My plan was to scrape all of the UUIDs and use them to retrieve all available years of the by-providers data.
+
+# The problem
+
+The HTML source code for the page the table occurs on looks like this:
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <base href="">
+    <title>Centers for Medicare & Medicaid Services Data</title>
+    <script type="text/javascript" defer="defer">
+    window.utag_cfg_ovrd = {
+        noview: !0
+    }
+    </script>
+    <script type="text/javascript" src="//tags.tiqcdn.com/utag/cmsgov/cms-data/prod/utag.sync.js" defer="defer"></script>
+    <script type="text/javascript" defer="defer">
+    !function(t, e, a, c) {
+        t = "//tags.tiqcdn.com/utag/cmsgov/cms-data/prod/utag.js",
+        a = "script",
+        (c = (e = document).createElement(a)).src = t,
+        c.type = "text/java" + a,
+        c.async = !0,
+        (t = e.getElementsByTagName(a)[0]).parentNode.insertBefore(c, t)
+    }()
+    </script>
+    <meta name="google-site-verification" content="1Zz9H6vs9l-q9fVNIgjKytNZG3NSQHvL500-iQIPJzQ"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/>
+    <link rel="manifest" href="/manifest.json"/>
+    <script defer="defer" src="/static/js/main.d5cc3d09.js"></script>
+    <link href="/static/css/main.ce9c48cc.css" rel="stylesheet">
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+</body>
+</html>
+
+```
+
+Note that there's not a table in sight. Instead what we get are a set of JavaScripts. What the page is doing is running JavaScript to dynamically create the table we're interested in. Since there's nothing like a `<table>` tag in the HTML source, plain vanilla techniques won't be able to scrape the data we want.
+
+# Enter Selenium
+
+<a href="https://www.selenium.dev" target="_blank">Selenium</a> is software that's primarily used to automate the testing of web pages. But it can also bet used to get data from hard-to-scrape pages like the one we're dealing with. Selenium can be set up to "drive" different web browsers (e.g., Firefox, Chrome). Crucially, when a Selenium-driven browser reads a page with JavaScript, it outputs the HTML that the JavaScript creates. This means that we can use Selenium to scrape tables created by JavaScript.
+
+# Running Selenium in a Docker container
+
+The easiest way to get Selenium up and running is to use a Docker container. If you don't already have Docker Desktop installed, you can get it <a href="https://www.docker.com" target="_blank">here</a>. Once it's in place, run the following commands in an R session:
+
+```{r fake_docker, eval = FALSE}
+
+# Open Docker Desktop (not necessary if it's already running)
+system("open -a Docker")
+Sys.sleep(30)
+
+# Download the selenium-firefox image
+system("docker pull selenium/standalone-firefox:2.53.1")
+Sys.sleep(30)
+
+# Start a selenium-firefox container on port 4445
+system("docker run -d -p 4445:4444 selenium/standalone-firefox:2.53.1")
+Sys.sleep(5)
+
+```
+
+`Sys.sleep()` is used to pause execution while waiting for different actions to complete in the background (e.g., for Docker Desktop to open, or for the Selenium-Firefox image to download). You may need to increase the number of seconds that `Sys.sleep()` waits if the above code doesn't execute correctly.
+
+# Scrape with RSelenium & rvest
+
+We now have a Docker container up and running. The container includes a Selenium server and a Firefox browser. The next step is to connect to the Selenium server. We can use it to tell Firefox to navigate to the page we want to scrape.
+
+There are lots of programming languages that have bindings to Selenium. You can view a list of them <a href="https://www.selenium.dev/ecosystem" target="_blank">here</a>. We're going to use the bindings provided in the R package <a href="https://docs.ropensci.org/RSelenium/" target="_blank">RSelenium</a>. We'll additionally use a few tools from the rvest package to scrape the table we want.
+
+Here's how to connect to the Selenium server and navigate to the page we want to scrape:
+
+```{r connect, warning = FALSE, message = FALSE, error = FALSE}
+
+library(RSelenium)
+
+# URL of the page we want to scrape
+url <- "https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider/api-docs"
+
+# Create a remote driver that will communicate with the Selenium server on port
+# 4445.
+remote <- remoteDriver(port = 4445)
+
+# Open a connection to the server
+remote$open()
+Sys.sleep(5)
+
+# Navigate to URL
+remote$navigate(url)
+Sys.sleep(5)
+
+```
+
+And here's where we do the scraping. ```getPageSource()``` is an RSelenium function that returns a page's HTML. From there I switch to a couple of functions from rvest. These are a bit easier to work with than the RSelenium functions. ```read_html()``` returns an XML document; ```html_table()``` returns all tables in the XML document as a list of R dataframes. The second dataframe is the one we want.
+
+```{r scrape}
+
+library(rvest)
+
+# Scrape tables
+tables <-remote$getPageSource()[[1]] %>%
+        read_html() %>%
+        html_table()
+
+# The second table has the UUIDs we want
+target <- tables[[2]]
+target
+
+```
+
+# Using the Medicare Part D API
+
+The API to retrieve by-provider data takes a URL as input and returns data in JSON format. The URL is made up of a *base*, a dataset *UUID*, and a *suffix*. In the example below, I use the UUID for the 2021 dataset, and include "?size=5" in the suffix to limit the returned data to the first five records:
+
+```{r create_URL, eval = FALSE}
+
+# Pieces of the URL string
+base <- "https://data.cms.gov/data-api/v1/dataset/"
+uuid <- "71f5cb09-ea5e-4dc8-836c-db0276b684f6"
+suffix <- "/data?size=5"
+
+# Paste pieces together to make the complete URL
+url <- paste0(base, uuid, suffix)
+
+```
+
+Once the URL has been constructed, the data can be retrieved as follows: 
+
+```{r get_data, warning = FALSE, message = FALSE, eval = FALSE}
+
+library(jsonlite)
+library(dplyr)
+
+# Read JSON data at URL and convert to tibble
+fromJSON(url) %>%
+    as_tibble()
+
+```
+
+Now we have all of the pieces we need to iterate over our UUIDs to collect all of the by-provider data (or at least the first five rows from each year):
+
+```{r loop, warning = FALSE, message = FALSE}
+
+library(purrr)
+
+# Loop over UUIDs
+data <- map(target$UUID, function(uuid) {
+    
+    # Construct URL
+    base <- "https://data.cms.gov/data-api/v1/dataset/"
+    uuid <- uuid
+    suffix <- "/data?size=5"
+    url <- paste0(base, uuid, suffix)
+
+    # Get data
+    fromJSON(url) %>%
+        as_tibble() }) %>%
+    list_rbind()
+
+# Show sample columns
+data %>%
+    select(PRSCRBR_NPI, Prscrbr_Type, Prscrbr_Gndr, Prscrbr_RUCA, 
+           Antbtc_Tot_Clms, Tot_Benes, Bene_Avg_Risk_Scre, Bene_Avg_Age)
+    
+```

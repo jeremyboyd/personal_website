@@ -1,0 +1,248 @@
+---
+title: Scraping Medicare Part D antibiotic prescribing data
+subtitle: Web pages generated from JavaScript present scraping difficulties that can be overcome with Selenium
+date: '2023-05-25'
+slug: scraping-with-selenium
+categories: []
+tags: ["Medicare Part D", "antibiotics", "web scraping", "Selenium", "Docker", "R", "rvest"]
+summary: ''
+authors: [admin]
+lastmod: '2023-05-25T15:21:17-06:00'
+featured: no
+image:
+    placement: 3
+    caption: ''
+    focal_point: 'Center'
+    preview_only: no
+projects: []
+---
+
+
+
+<p>Scraping a table from a web page is typically pretty simple: just look for something in the page’s HTML with <code>&lt;table&gt;</code> tags, like this:</p>
+<pre class="html"><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;A&lt;/th&gt;
+    &lt;th&gt;B&lt;/th&gt; 
+    &lt;th&gt;C&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;x&lt;/td&gt;
+    &lt;td&gt;1&lt;/td&gt; 
+    &lt;td&gt;2&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;y&lt;/td&gt;
+    &lt;td&gt;3&lt;/td&gt; 
+    &lt;td&gt;4&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<p>This HTML gives us a table with column headers <em>A</em>, <em>B</em>, and <em>C</em>, and two rows: one with data <em>x</em>, <em>1</em>, and <em>2</em>, and the other with data <em>y</em>, <em>3</em>, and <em>4</em>.</p>
+<p>Modern web-scraping tools like R’s <a href="https://rvest.tidyverse.org" target="_blank">rvest</a> package make it easy to find tables and read them into your scripts for further processing and analysis. Unfortunately, not all tables are created in the same way. Take the table below, for example, which occurs on <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider/api-docs" target="_blank">this page</a>:</p>
+<p><img src="dataset_versions.png" /></p>
+<p>The table lists versions (years of data) for the <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider" target="_blank">Medicare Part D by-provider dataset</a>. Medicare Part D is the name for Medicare’s prescription drug benefit. The by-provider dataset contains prescribing data organized by providers—i.e., for each year of data there’s one row for each provider, with fields describing features of providers, the prescriptions they wrote, and the beneficiaries they wrote them for. I worked on a study where I used this dataset to model antibiotic prescribing rates across different geographic regions. The Center for Medicare and Medicaid Services, which publishes the dataset, makes it easy to get via API. The API call requries a UUID (universally unique identifier; the second column in the table above) from the table. My plan was to scrape all of the UUIDs and use them to retrieve all available years of the by-providers data.</p>
+<div id="the-problem" class="section level1">
+<h1>The problem</h1>
+<p>The HTML source code for the page the table occurs on looks like this:</p>
+<pre class="html"><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;base href=&quot;&quot;&gt;
+    &lt;title&gt;Centers for Medicare &amp; Medicaid Services Data&lt;/title&gt;
+    &lt;script type=&quot;text/javascript&quot; defer=&quot;defer&quot;&gt;
+    window.utag_cfg_ovrd = {
+        noview: !0
+    }
+    &lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;//tags.tiqcdn.com/utag/cmsgov/cms-data/prod/utag.sync.js&quot; defer=&quot;defer&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; defer=&quot;defer&quot;&gt;
+    !function(t, e, a, c) {
+        t = &quot;//tags.tiqcdn.com/utag/cmsgov/cms-data/prod/utag.js&quot;,
+        a = &quot;script&quot;,
+        (c = (e = document).createElement(a)).src = t,
+        c.type = &quot;text/java&quot; + a,
+        c.async = !0,
+        (t = e.getElementsByTagName(a)[0]).parentNode.insertBefore(c, t)
+    }()
+    &lt;/script&gt;
+    &lt;meta name=&quot;google-site-verification&quot; content=&quot;1Zz9H6vs9l-q9fVNIgjKytNZG3NSQHvL500-iQIPJzQ&quot;/&gt;
+    &lt;meta charset=&quot;utf-8&quot;/&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;/&gt;
+    &lt;meta name=&quot;theme-color&quot; content=&quot;#000000&quot;/&gt;
+    &lt;link rel=&quot;manifest&quot; href=&quot;/manifest.json&quot;/&gt;
+    &lt;script defer=&quot;defer&quot; src=&quot;/static/js/main.d5cc3d09.js&quot;&gt;&lt;/script&gt;
+    &lt;link href=&quot;/static/css/main.ce9c48cc.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;noscript&gt;You need to enable JavaScript to run this app.&lt;/noscript&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Note that there’s not a table in sight. Instead what we get are a set of JavaScripts. What the page is doing is running JavaScript to dynamically create the table we’re interested in. Since there’s nothing like a <code>&lt;table&gt;</code> tag in the HTML source, plain vanilla techniques won’t be able to scrape the data we want.</p>
+</div>
+<div id="enter-selenium" class="section level1">
+<h1>Enter Selenium</h1>
+<p><a href="https://www.selenium.dev" target="_blank">Selenium</a> is software that’s primarily used to automate the testing of web pages. But it can also bet used to get data from hard-to-scrape pages like the one we’re dealing with. Selenium can be set up to “drive” different web browsers (e.g., Firefox, Chrome). Crucially, when a Selenium-driven browser reads a page with JavaScript, it outputs the HTML that the JavaScript creates. This means that we can use Selenium to scrape tables created by JavaScript.</p>
+<p>The easiest way to get Selenium up and running is to use a Docker container. If you don’t already have Docker Desktop installed, you can get it <a href="https://www.docker.com" target="_blank">here</a>. Once it’s in place, run the following commands in an R session:</p>
+<pre class="r"><code># Open Docker Desktop (not necessary if it&#39;s already running)
+system(&quot;open -a Docker&quot;)
+Sys.sleep(30)
+
+# Download the selenium-firefox image
+system(&quot;docker pull selenium/standalone-firefox:2.53.1&quot;)
+Sys.sleep(30)
+
+# Start a selenium-firefox container on port 4445
+system(&quot;docker run -d -p 4445:4444 selenium/standalone-firefox:2.53.1&quot;)
+Sys.sleep(5)</code></pre>
+<p><code>Sys.sleep()</code> is used to pause execution while waiting for different actions to complete in the background (e.g., for Docker Desktop to open, or for the Selenium-Firefox image to download). You may need to increase the number of seconds that <code>Sys.sleep()</code> waits if the above code doesn’t execute correctly.</p>
+</div>
+<div id="scrape-with-rselenium-rvest" class="section level1">
+<h1>Scrape with RSelenium &amp; rvest</h1>
+<p>We now have a Docker container up and running. The container includes a Selenium server and a Firefox browser. The next step is to connect to the Selenium server. We can use it to tell Firefox to navigate to the page we want to scrape.</p>
+<p>There are lots of programming languages that have bindings to Selenium. You can view a list of them <a href="https://www.selenium.dev/ecosystem" target="_blank">here</a>. We’re going to use the bindings provided in the R package <a href="https://docs.ropensci.org/RSelenium/" target="_blank">RSelenium</a>. We’ll additionally use a few tools from the rvest package to scrape the table we want.</p>
+<p>Here’s how to connect to the Selenium server and navigate to the page we want to scrape:</p>
+<pre class="r"><code>library(RSelenium)
+
+# URL of the page we want to scrape
+url &lt;- &quot;https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider/api-docs&quot;
+
+# Create a remote driver that will communicate with the Selenium server on port
+# 4445.
+remote &lt;- remoteDriver(port = 4445)
+
+# Open a connection to the server
+remote$open()</code></pre>
+<pre><code>## [1] &quot;Connecting to remote server&quot;
+## $applicationCacheEnabled
+## [1] TRUE
+## 
+## $rotatable
+## [1] FALSE
+## 
+## $handlesAlerts
+## [1] TRUE
+## 
+## $databaseEnabled
+## [1] TRUE
+## 
+## $version
+## [1] &quot;47.0.1&quot;
+## 
+## $platform
+## [1] &quot;LINUX&quot;
+## 
+## $nativeEvents
+## [1] FALSE
+## 
+## $acceptSslCerts
+## [1] TRUE
+## 
+## $webdriver.remote.sessionid
+## [1] &quot;df075f42-1c41-4145-9ea5-34b4d3cc80cc&quot;
+## 
+## $webStorageEnabled
+## [1] TRUE
+## 
+## $locationContextEnabled
+## [1] TRUE
+## 
+## $browserName
+## [1] &quot;firefox&quot;
+## 
+## $takesScreenshot
+## [1] TRUE
+## 
+## $javascriptEnabled
+## [1] TRUE
+## 
+## $cssSelectorsEnabled
+## [1] TRUE
+## 
+## $id
+## [1] &quot;df075f42-1c41-4145-9ea5-34b4d3cc80cc&quot;</code></pre>
+<pre class="r"><code>Sys.sleep(5)
+
+# Navigate to URL
+remote$navigate(url)
+Sys.sleep(5)</code></pre>
+<p>And here’s where we do the scraping. <code>getPageSource()</code> is an RSelenium function that returns a page’s HTML. From there I switch to a couple of functions from rvest. These are a bit easier to work with than the RSelenium functions. <code>read_html()</code> returns an XML document; <code>html_table()</code> returns all tables in the XML document as a list of R dataframes. The second dataframe is the one we want.</p>
+<pre class="r"><code>library(rvest)
+
+# Scrape tables
+tables &lt;-remote$getPageSource()[[1]] %&gt;%
+        read_html() %&gt;%
+        html_table()
+
+# The second table has the UUIDs we want
+target &lt;- tables[[2]]
+target</code></pre>
+<pre><code>## # A tibble: 9 × 2
+##   Version UUID                                
+##     &lt;int&gt; &lt;chr&gt;                               
+## 1    2021 71f5cb09-ea5e-4dc8-836c-db0276b684f6
+## 2    2020 c1133ecf-a599-4dab-86c1-b49f29c70b89
+## 3    2019 be8044a7-89bd-46ea-8a77-8285a100d572
+## 4    2018 a4de2a6e-99c4-4603-b9e6-004a20020ee6
+## 5    2017 47451941-7a65-4584-a16a-680fb7f0df51
+## 6    2016 46149427-ec1b-43ce-a9c8-ed1dc2b944a9
+## 7    2015 1e16a554-a0eb-44df-bb4c-2ec933e3f5b5
+## 8    2014 6613f30d-a2d6-46c0-bbcf-d84d48626f90
+## 9    2013 088a831a-321d-45ae-a3aa-ce8f09cbec92</code></pre>
+</div>
+<div id="using-the-medicare-part-d-api" class="section level1">
+<h1>Using the Medicare Part D API</h1>
+<p>The API to retrieve by-provider data takes a URL as input and returns data in JSON format. The URL is made up of a <em>base</em>, a dataset <em>UUID</em>, and a <em>suffix</em>. In the example below, I use the UUID for the 2021 dataset, and include “?size=5” in the suffix to limit the returned data to the first five records:</p>
+<pre class="r"><code># Pieces of the URL string
+base &lt;- &quot;https://data.cms.gov/data-api/v1/dataset/&quot;
+uuid &lt;- &quot;71f5cb09-ea5e-4dc8-836c-db0276b684f6&quot;
+suffix &lt;- &quot;/data?size=5&quot;
+
+# Paste pieces together to make the complete URL
+url &lt;- paste0(base, uuid, suffix)</code></pre>
+<p>Once the URL has been constructed, the data can be retrieved as follows:</p>
+<pre class="r"><code>library(jsonlite)
+library(dplyr)
+
+# Read JSON data at URL and convert to tibble
+fromJSON(url) %&gt;%
+    as_tibble()</code></pre>
+<p>Now we have all of the pieces we need to iterate over our UUIDs to collect all of the by-provider data (or at least the first five rows from each year):</p>
+<pre class="r"><code>library(purrr)
+
+# Loop over UUIDs
+data &lt;- map(target$UUID, function(uuid) {
+    
+    # Construct URL
+    base &lt;- &quot;https://data.cms.gov/data-api/v1/dataset/&quot;
+    uuid &lt;- uuid
+    suffix &lt;- &quot;/data?size=5&quot;
+    url &lt;- paste0(base, uuid, suffix)
+
+    # Get data
+    fromJSON(url) %&gt;%
+        as_tibble() }) %&gt;%
+    list_rbind()
+
+# Show sample columns
+data %&gt;%
+    select(PRSCRBR_NPI, Prscrbr_Type, Prscrbr_Gndr, Prscrbr_RUCA, 
+           Antbtc_Tot_Clms, Tot_Benes, Bene_Avg_Risk_Scre, Bene_Avg_Age)</code></pre>
+<pre><code>## # A tibble: 45 × 8
+##    PRSCRBR_NPI Prscrbr_Type  Prscrbr_Gndr Prscrbr_RUCA Antbtc_Tot_Clms Tot_Benes
+##    &lt;chr&gt;       &lt;chr&gt;         &lt;chr&gt;        &lt;chr&gt;        &lt;chr&gt;           &lt;chr&gt;    
+##  1 1003000126  Internal Med… M            1            &quot;59&quot;            &quot;358&quot;    
+##  2 1003000142  Anesthesiolo… M            1            &quot;&quot;              &quot;299&quot;    
+##  3 1003000167  Dentist       M            2            &quot;35&quot;            &quot;35&quot;     
+##  4 1003000175  Dentist       F            1            &quot;15&quot;            &quot;11&quot;     
+##  5 1003000423  Obstetrics &amp;… F            1            &quot;&quot;              &quot;66&quot;     
+##  6 1003000126  Internal Med… M            1            &quot;42&quot;            &quot;106&quot;    
+##  7 1003000142  Anesthesiolo… M            1            &quot;&quot;              &quot;228&quot;    
+##  8 1003000167  Dentist       M            2            &quot;46&quot;            &quot;43&quot;     
+##  9 1003000175  Dentist       F            1            &quot;16&quot;            &quot;&quot;       
+## 10 1003000282  Nurse Practi… F            1            &quot;&quot;              &quot;&quot;       
+## # ℹ 35 more rows
+## # ℹ 2 more variables: Bene_Avg_Risk_Scre &lt;chr&gt;, Bene_Avg_Age &lt;chr&gt;</code></pre>
+</div>

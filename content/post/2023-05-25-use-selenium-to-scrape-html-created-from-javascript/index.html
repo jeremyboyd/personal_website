@@ -5,7 +5,7 @@ date: '2023-05-25'
 slug: scraping-with-selenium
 categories: []
 tags: ["Medicare Part D", "antibiotics", "web scraping", "Selenium", "Docker", "R", "rvest"]
-summary: ''
+summary: 'Web pages generated from JavaScript present scraping difficulties that can be overcome with Selenium.'
 authors: [admin]
 lastmod: '2023-05-25T15:21:17-06:00'
 featured: no
@@ -19,7 +19,7 @@ projects: []
 
 
 
-<p>Scraping a table from a web page is typically pretty simple: just look for something in the page’s HTML with <code>&lt;table&gt;</code> tags, like this:</p>
+<p>Scraping a table from a web page is typically pretty simple: just look in the page’s HTML for <code>&lt;table&gt;</code> tags, like this:</p>
 <pre class="html"><code>&lt;table&gt;
   &lt;tr&gt;
     &lt;th&gt;A&lt;/th&gt;
@@ -41,7 +41,7 @@ projects: []
 <p>This HTML gives us a table with column headers <em>A</em>, <em>B</em>, and <em>C</em>, and two rows: one with data <em>x</em>, <em>1</em>, and <em>2</em>, and the other with data <em>y</em>, <em>3</em>, and <em>4</em>.</p>
 <p>Modern web-scraping tools like R’s <a href="https://rvest.tidyverse.org" target="_blank">rvest</a> package make it easy to find tables and read them into your scripts for further processing and analysis. Unfortunately, not all tables are created in the same way. Take the table below, for example, which occurs on <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider/api-docs" target="_blank">this page</a>:</p>
 <p><img src="dataset_versions.png" /></p>
-<p>The table lists versions (years of data) for the <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider" target="_blank">Medicare Part D by-provider dataset</a>. Medicare Part D is the name for Medicare’s prescription drug benefit. The by-provider dataset contains prescribing data organized by providers—i.e., for each year of data there’s one row for each provider, with fields describing features of providers, the prescriptions they wrote, and the beneficiaries they wrote them for. I worked on a study where I used this dataset to model antibiotic prescribing rates across different geographic regions. The Center for Medicare and Medicaid Services, which publishes the dataset, makes it easy to get via API. The API call requries a UUID (universally unique identifier; the second column in the table above) from the table. My plan was to scrape all of the UUIDs and use them to retrieve all available years of the by-providers data.</p>
+<p>The table lists versions (years of data) for the <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider" target="_blank">Medicare Part D by-provider dataset</a>. Medicare Part D is the name for Medicare’s prescription drug benefit. The by-provider dataset contains prescribing data organized by providers—i.e., for each year of data there’s one row for each provider, with fields describing features of providers, the prescriptions they wrote, and the beneficiaries they wrote them for. I worked on a study where I used this dataset to model antibiotic prescribing rates across different geographic regions. The Center for Medicare and Medicaid Services, which publishes the dataset, makes it easy to get via API. The API call requries a UUID (universally unique identifier; the second column in the table above). My plan was to scrape all of the UUIDs and use them to retrieve all available years of the by-providers data.</p>
 <div id="the-problem" class="section level1">
 <h1>The problem</h1>
 <p>The HTML source code for the page the table occurs on looks like this:</p>
@@ -85,6 +85,9 @@ projects: []
 <div id="enter-selenium" class="section level1">
 <h1>Enter Selenium</h1>
 <p><a href="https://www.selenium.dev" target="_blank">Selenium</a> is software that’s primarily used to automate the testing of web pages. But it can also bet used to get data from hard-to-scrape pages like the one we’re dealing with. Selenium can be set up to “drive” different web browsers (e.g., Firefox, Chrome). Crucially, when a Selenium-driven browser reads a page with JavaScript, it outputs the HTML that the JavaScript creates. This means that we can use Selenium to scrape tables created by JavaScript.</p>
+</div>
+<div id="running-selenium-in-a-docker-container" class="section level1">
+<h1>Running Selenium in a Docker container</h1>
 <p>The easiest way to get Selenium up and running is to use a Docker container. If you don’t already have Docker Desktop installed, you can get it <a href="https://www.docker.com" target="_blank">here</a>. Once it’s in place, run the following commands in an R session:</p>
 <pre class="r"><code># Open Docker Desktop (not necessary if it&#39;s already running)
 system(&quot;open -a Docker&quot;)
@@ -141,7 +144,7 @@ remote$open()</code></pre>
 ## [1] TRUE
 ## 
 ## $webdriver.remote.sessionid
-## [1] &quot;df075f42-1c41-4145-9ea5-34b4d3cc80cc&quot;
+## [1] &quot;79effbdd-c6ef-4fab-abdc-9e046aca61f1&quot;
 ## 
 ## $webStorageEnabled
 ## [1] TRUE
@@ -162,7 +165,7 @@ remote$open()</code></pre>
 ## [1] TRUE
 ## 
 ## $id
-## [1] &quot;df075f42-1c41-4145-9ea5-34b4d3cc80cc&quot;</code></pre>
+## [1] &quot;79effbdd-c6ef-4fab-abdc-9e046aca61f1&quot;</code></pre>
 <pre class="r"><code>Sys.sleep(5)
 
 # Navigate to URL

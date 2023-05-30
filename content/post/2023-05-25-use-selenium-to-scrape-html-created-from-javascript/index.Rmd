@@ -5,7 +5,7 @@ date: '2023-05-25'
 slug: scraping-with-selenium
 categories: []
 tags: ["Medicare Part D", "antibiotics", "web scraping", "Selenium", "Docker", "R", "rvest"]
-summary: ''
+summary: 'Web pages generated from JavaScript present scraping difficulties that can be overcome with Selenium.'
 authors: [admin]
 lastmod: '2023-05-25T15:21:17-06:00'
 featured: no
